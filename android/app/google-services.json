@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "287166410631",
+    "project_id": "bookverse-c900b",
+    "storage_bucket": "bookverse-c900b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:287166410631:android:c57e42527fda2d2fdbed22",
+        "android_client_info": {
+          "package_name": "com.bookverse"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "287166410631-e2vpslt4o5mvh99u94b9tnj49s7ha7e8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.bookverse",
+            "certificate_hash": "cfd895794c3a196dd2bddb00d57adbd07ade70fb"
+          }
+        },
+        {
+          "client_id": "287166410631-9en1bv438odtcnu1k5phfpde5s3ic1or.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC-tTlhY_7T0aOjwOPJuyQ71rF2izPSn-g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "287166410631-9en1bv438odtcnu1k5phfpde5s3ic1or.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
