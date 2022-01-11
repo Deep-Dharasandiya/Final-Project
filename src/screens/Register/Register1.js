@@ -5,16 +5,24 @@ import { unit, width, height } from '../../constant/ScreenDetails'
 import PhoneNumberFeild from '../../components/input/PhoneNumberFeild'
 import RoundedButton from '../../components/button/RoundedButton'
 import { isPhoneNumber } from '../../constant/Validation'
+import auth from '@react-native-firebase/auth';
 
 export default function Register1(props) {
     const [contactNumber, setContactNumber] = React.useState('');
     function onChangeContactNumber(text) {
         setContactNumber(text);
     }
+    async function signInWithPhoneNumber(phoneNumber) {
+        const confirmation = await auth().signInWithPhoneNumber(phoneNumber);
+        if (confirmation._auth._app._automaticDataCollectionEnabled){
+            props.navigation.navigate('Register2',{confirmation:confirmation});
+        }
+    }
     function onSend() {
         if (contactNumber != '') {
             if (isPhoneNumber(contactNumber)) {
-                props.navigation.navigate('Register2')
+                signInWithPhoneNumber("+91"+contactNumber);
+               // props.navigation.navigate('Register2');
             } else {
                 alert("Enter Valid Contact Number")
             }

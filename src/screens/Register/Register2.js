@@ -12,10 +12,19 @@ export default function Register2(props) {
     function onChangeOTP(text) {
         setotp(text);
     }
+    async function confirmCode() {
+        try {
+            const confirm = props.route.params.confirmation
+            await confirm.confirm(otp);
+        } catch (error) {
+            console.log('Invalid code.');
+        }
+    }
     function onVerify() {
         if (otp != '') {
             if (isValidPin(otp)) {
-                props.navigation.navigate('Register3')
+                confirmCode();
+               // props.navigation.navigate('Register3')
             } else {
                 alert("OTP not valid")
             }

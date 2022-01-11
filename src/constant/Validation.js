@@ -40,7 +40,7 @@ export function isPhoneNumber(val) {
     const length = val.length;
     if (val=='') {
       isValid = false;
-    } else if (!(length == 4)) {
+    } else if (!(length == 6)) {
       isValid = false;
     }else if(regex.test(val))
     return isValid;
