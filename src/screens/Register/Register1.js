@@ -21,8 +21,8 @@ export default function Register1(props) {
     function onSend() {
         if (contactNumber != '') {
             if (isPhoneNumber(contactNumber)) {
-                signInWithPhoneNumber("+91"+contactNumber);
-               // props.navigation.navigate('Register2');
+                //signInWithPhoneNumber("+91"+contactNumber);
+               props.navigation.navigate('Register2');
             } else {
                 alert("Enter Valid Contact Number")
             }

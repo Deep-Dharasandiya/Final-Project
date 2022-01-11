@@ -8,7 +8,8 @@ import TextFeild from '../../components/input/textFeild';
 import DropDawnList from '../../components/input/DropDawnList'
 import MediaSelection from '../../components/input/MediaSelection'
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
-import CheckBox from '../../components/input/CheckBox'
+import CheckBox from '../../components/input/CheckBox';
+import storage from '@react-native-firebase/storage';
 
 export default function Register3(props) {
     const [profileUri, setProfileUri] = React.useState('');
@@ -92,6 +93,12 @@ export default function Register3(props) {
             style={styles.underLineText}
             onPress={onPolicy}
         >{string} </Text>
+
+    async function uploadImage(uri){
+        const reference = storage().ref(`Profile Picture/Profile_${"1212124514"}.png`);
+        await reference.putFile(uri);
+        console.log(await storage().ref(`Profile Picture/Profile_${"1212124514"}.png`).getDownloadURL())
+    }
     const options = {
         storageOptions: {
             path: 'images',
@@ -120,6 +127,7 @@ export default function Register3(props) {
             } else {
                 if (response.hasOwnProperty('assets')) {
                     setProfileUri(response.assets[0]['uri']);
+                    //uploadImage(response.assets[0]['uri']);
                 }
 
             }

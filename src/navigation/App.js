@@ -1,6 +1,8 @@
 import React from 'react'
-import { StyleSheet, Text, View, StatusBar } from 'react-native'
+import { StatusBar,Platform} from 'react-native'
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import PushNotification from 'react-native-push-notification';
+import messaging from '@react-native-firebase/messaging';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 const Stack = createStackNavigator();
@@ -18,11 +20,81 @@ import ForgotPassword3 from '../screens/forgotPassword/ForgotPassword3';
 
 import BottomTabNavigation from './BottomTabNavigation';
 
-export default function App() {
-  React.useEffect(() => {
-    StatusBar.setTranslucent(true);
+export default function App(props) {
+  React.useEffect( () => {
+    if(Platform.OS=='android'){
+      StatusBar.setTranslucent(true);
+    }
     StatusBar.setBarStyle('dark-content', true);
+
+
+
+    async function getFCMToken(){
+      const fcmToken = await messaging().getToken();
+      if (fcmToken) {
+        console.log(fcmToken);
+      } 
+    }
+    getFCMToken();
+
+
+
+
+    messaging().setBackgroundMessageHandler(async remoteMessage => {
+      console.log('App.js  Message handled in the background!', remoteMessage);
+    });
+
+
+
+    messaging().onMessage(async remoteMessage => {
+      console.log(' App.js A new FCM message arrived!', JSON.stringify(remoteMessage));
+    });
+
+    messaging().onNotificationOpenedApp(remoteMessage => {
+      console.log(
+        'Notification caused app to open from background state:',
+        remoteMessage.notification,
+      );
+    });
+
+    PushNotification.createChannel(
+      {
+        channelId: 'fcm_fallback_notification_channel', // (required)
+        channelName: 'default', // (required)
+      },
+      // (optional) callback returns whether the channel was created, false means it already existed.
+    );
+
+
+    PushNotification.configure({
+      onNotification: function (notification) {
+       // console.log('NOTIFICATION:', notification);
+      //  console.log(notification);
+        const clicked = notification.userInteraction;
+        if (clicked) {
+          console.log('cliked')
+        } else {
+          PushNotification.localNotification({
+            //largeIcon: 'ic_launcher',
+            channelId:'cm_fallback_notification_channel',
+            title: 'Test',
+            android: {
+              smallIcon: 'name-of-a-small-icon', // optional, defaults to 'ic_launcher'.
+            },
+            //message: JSON.stringify(xyz.notificationResponse.bookingId),
+          });
+        }
+      },
+
+      userInteraction: true,
+     // senderID: '551192187233',
+      popInitialNotification: true,
+      requestPermissions: true,
+    });
+   // PushNotification.deleteChannel("fcm_fallback_notification_channel");
   }, []);
+
+
   return (
     <SafeAreaProvider>
       <NavigationContainer>

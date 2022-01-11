@@ -23,8 +23,8 @@ export default function Register2(props) {
     function onVerify() {
         if (otp != '') {
             if (isValidPin(otp)) {
-                confirmCode();
-               // props.navigation.navigate('Register3')
+                //confirmCode();
+                props.navigation.navigate('Register3')
             } else {
                 alert("OTP not valid")
             }

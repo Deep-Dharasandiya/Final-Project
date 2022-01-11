@@ -37,6 +37,13 @@
             {
               "client_id": "287166410631-9en1bv438odtcnu1k5phfpde5s3ic1or.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "287166410631-gaqi6jfjqm847nv67echf84rbtf74sae.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "org.reactjs.native.example.bookverse"
+              }
             }
           ]
         }
