@@ -1,214 +1,268 @@
 import React from 'react'
-import { StyleSheet, Text, TouchableOpacity, View ,Image,TextInput,FlatList} from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View ,Image,TextInput,FlatList,ActivityIndicator} from 'react-native'
+//styles
+import CommonStyles from '../../CommonStyles'
+//utils
 import Colors from '../../../constant/Colors'
-import { unit,width } from '../../../constant/ScreenDetails'
+import { unit} from '../../../constant/ScreenDetails'
+import { fetchAllBook } from '../../../networkServices/AuthenticationServices'
+import { rootContext } from '../../../context/store/ContextStore'
+import { addBookPost } from '../../../context/actions/bookPostActions'
+import MediaSelection from '../../../components/input/MediaSelection'
+import { clearBookPost } from '../../../context/actions/bookPostActions'
+import { aleartOn } from '../../../context/actions/commonActions'
+import ConfirmationAleart from '../../../components/confirmationAleart'
 
 export default function PostList(props) {
     const [search,setSearch] = React.useState('');
+    const [filterFlag,setFilterFlag]=React.useState(false);
+    const [isLoading, setIsLoading] = React.useState(false);
+    const [isCollegeOnly,setIsCollegeOnly]=React.useState(false)
+    const contextData = React.useContext(rootContext);
+    const currentUserID = contextData.commonReducerState.userDetails._id;
+    React.useEffect(() => {
+       if( contextData.bookPostReducerState.bookPostData.length==0){
+           fetchBooksData(true);
+       }
+       
+    },[]);
+    let filterData = [ {
+        value: 'College',
+    }];
+    function handleFilterFlag(flag){
+        setFilterFlag(flag);
+    }
+    async function onChangeFilter(text){
+        if (!isCollegeOnly){
+            if (contextData.bookPostReducerState.bookPostData.filter((item) => item.userID.college == contextData.commonReducerState.userDetails.college).length==0){
+                fetchBooksData();
+            }
+           setIsCollegeOnly(true);
+
+        }else{
+          setIsCollegeOnly(false);
+        }
+       
+    }
+    async function fetchBooksData(initial){
+        setIsLoading(true);
+        let date;
+        let dataLength = contextData.bookPostReducerState.bookPostData.length;
+        dataLength = contextData.bookPostReducerState.bookPostData.length;
+        if (dataLength != 0  && !initial) {
+            date = contextData.bookPostReducerState.bookPostData[dataLength-1].date;
+        }else{
+            date="current";
+        }
+        const body = {
+            userID: contextData.commonReducerState.userDetails._id,
+            city: contextData.commonReducerState.userDetails.city,
+            college: '',
+            date: date,
+        }
+        const response = await fetchAllBook(body);
+        console.log(response)
+        if (response) {
+            if(initial){
+                clearBookPost();
+            }
+            addBookPost(response);
+            //setBooksData(booksData.concat(response));
+        }
+        setIsLoading(false);
+    }
+    function openDrawer(){
+        props.navigation.openDrawer();
+    }
+    function onRefresh(){
+        fetchBooksData(true);
+    }
+    function onEndScroll(){
+        if (contextData.bookPostReducerState.bookPostData.length%20==0){
+            fetchBooksData(false);
+        }
+       
+    }
     function onChangeSearch(text){
         setSearch(text);
     }
-    const data=[
-        {
-            name:"Deep Dharasandiya",
-            collage:"LDRP-ITR",
-            book:"Book's name abc",
-            condition:"In Good condition",
-            price:"150₹"
-        },
-        {
-            name: "Kuldip Jasani",
-            collage: "LDRP-ITR",
-            book: "Book's name xyz",
-            condition: "In Very Good Condition",
-            price: "200₹"
-        },
-        {
-            name: "Jay Kothadiya",
-            collage: "LDRP-ITR",
-            book: "Book's name mno",
-            condition: "In Poor condition",
-            price: "50₹"
-        },
-        {
-            name: "Deep Dharasandiya",
-            collage: "LDRP-ITR",
-            book: "Book's name abc",
-            condition: "In Good condition",
-            price: "150₹"
-        },
-        {
-            name: "Kuldip Jasani",
-            collage: "LDRP-ITR",
-            book: "Book's name xyz",
-            condition: "In Very Good Condition",
-            price: "200₹"
-        },
-        {
-            name: "Jay Kothadiya",
-            collage: "LDRP-ITR",
-            book: "Book's name mno",
-            condition: "In Poor condition",
-            price: "50₹"
+    function checkForApplyed(requests){
+        const len = requests.length;
+        for(i=0;i<len;i++){
+            if (requests[i].userID._id== currentUserID){
+                return false;
+            }
         }
-    ]
+        return true;
+    }
     return (
-        <View style={styles.container}>
+        <View style={CommonStyles.containerBlurPurple}>
+             <MediaSelection
+                flag={filterFlag}
+                lable="Sort By:"
+                flagChange={handleFilterFlag}
+                data={filterData}
+                fn={onChangeFilter}
+                isFilter={isCollegeOnly}
+            /> 
             <View style={styles.appBar}>
               <View style={styles.appBarBody}>
-                    <Text style={styles.appBarTitle}>Books</Text>
-                    <TouchableOpacity
-                        style={styles.filterButton}
-                    >
-                        <Image
-                            style={styles.filterImage}
-                            resizeMode="contain"
-                            source={require('../../../assets/more/more.png')}
-                        />
-                    </TouchableOpacity>
-              </View>
-            </View>
-            <View style={styles.searchView}>
-                <TextInput
-                    style={styles.textinput}
-                    placeholder={"Search By Book's Name"}
-                    fontSize={15 * unit}
-                    placeholderTextColor={Colors.gray}
-                    onChangeText={text => onChangeSearch(text)}
-                    defaultValue={search}
-                />
-                <TouchableOpacity style={styles.searchButton}>
-                    <Image
-                        style={styles.filterImage}
-                        resizeMode="contain"
-                        source={require('../../../assets/more/more.png')}
-                    />
-                </TouchableOpacity>
-            </View>
-            <View style={styles.displayView}>
-
-
-                <FlatList
-                    key={1}
-                    data={data}
-                    listMode="SCROLLVIEW"
-                   // onEndReached={() => onEndScroll()}
-                    keyExtractor={(item, index) => `key-${index}`}
-                    renderItem={({ item, index }) => {
-                        return <TouchableOpacity style={styles.itemView}
-                            onPress={() => props.navigation.navigate('PostDetails')}
-                                >
-                                <View style={styles.itemViewBody}>
-                                    <View style={{ flex: 1, marginLeft: 15 * unit }}>
-                                        <Text style={{...styles.nameText,fontSize:20* unit}}>{item.book}</Text>
-                                        <Text style={{ ...styles.nameText, fontSize: 13 * unit, color: Colors.black }}>{item.name+", "+item.collage}</Text>
-                                        <Text style={styles.nameText}>{item.price}</Text>
-                                    </View>
-                                    <View style={styles.bookImage}>
-
-                                    </View>
-                                </View>
+                  <View style={{flexDirection:'row',...CommonStyles.centerAlignMent}}>
+                        <TouchableOpacity
+                            onPress={() => openDrawer()}
+                        >
+                            <Image
+                                style={{...CommonStyles.icon1Style,marginLeft:15* unit}}
+                                resizeMode="contain"
+                                source={require('../../../assets/menu/menu.png')}
+                            />
                         </TouchableOpacity>
+                        <Text style={{...CommonStyles.font4White,marginLeft:15* unit}}>Books</Text>
+                  </View>
                     
-                    }}
-                />
+                    <TouchableOpacity
+                        onPress={() => handleFilterFlag(true)}
+                    >
+                         <Image
+                            style={{...CommonStyles.icon1Style,marginRight:15* unit}}
+                            resizeMode="contain"
+                            source={require('../../../assets/sort/sort.png')}
+                        /> 
+                   </TouchableOpacity>
+              </View>
+                <View style={CommonStyles.searchView}>
+                    <TextInput
+                        style={CommonStyles.searchTextInput}
+                        placeholder={"Search By Book's Name"}
+                        fontSize={15 * unit}
+                        placeholderTextColor={Colors.gray}
+                        onChangeText={text => onChangeSearch(text)}
+                        defaultValue={search}
+                    />
+                   
+                    <Image
+                        style={{position:'absolute',marginHorizontal:15* unit,...CommonStyles.icon1Style}}
+                        resizeMode="contain"
+                        source={require('../../../assets/search/search.png')}
+                    />
+                  
+                </View>
             </View>
-
+            {
+                isCollegeOnly?
+                    contextData.bookPostReducerState.bookPostData.filter((item) => (checkForApplyed(item.requests) && item.userID.college == contextData.commonReducerState.userDetails.college && item.title.toLowerCase().includes(search.toLowerCase()))).length!=0?
+                    <View style={{flex:1}}>
+                        <FlatList
+                            key={1}
+                                data={contextData.bookPostReducerState.bookPostData.filter((item) => (checkForApplyed(item.requests) && item.userID.college == contextData.commonReducerState.userDetails.college && item.title.toLowerCase().includes(search.toLowerCase())))}
+                            listMode="SCROLLVIEW"
+                            onEndReachedThreshold={0.5}
+                            onRefresh={() => onRefresh()}
+                            refreshing={false}
+                            onEndReached={() => onEndScroll()}
+                            keyExtractor={(item, index) => `key-${index}`}
+                            ListFooterComponent={isLoading && (<ActivityIndicator />)}
+                            ListFooterComponentStyle={{
+                                marginVertical:10* unit,
+                                width: '100%',
+                                bottom: 0
+                         }}
+                        renderItem={({ item, index }) => {
+                            return <View>
+                            {
+                            item.isDisplay &&(
+                                <TouchableOpacity style={CommonStyles.itemView}
+                                    onPress={() => props.navigation.navigate('PostDetails', { item: item })}
+                                >
+                                    <View style={{ flex: 1 }}>
+                                        <Text style={CommonStyles.font2Purple}>{item.title}</Text>
+                                        <Text style={CommonStyles.font1Black}>{item.userID.firstName + " " + item.userID.lastName + ", " + item.userID.college}</Text>
+                                        <Text style={CommonStyles.font2Purple}>{item.price + " ₹"}</Text>
+                                    </View>
+                                    <Image
+                                        source={{ uri: item.coverURL }}
+                                        style={CommonStyles.imageView3}
+                                    />
+                                </TouchableOpacity>
+                            )
+                            }
+                            </View>
+                        }}
+                    />
+                </View>
+                :
+                <View style={{flex:1,...CommonStyles.centerAlignMent}}>
+                    {
+                        !isLoading ?
+                            <Text style={CommonStyles.font2Purple}>No books Found</Text>
+                        :
+                        <ActivityIndicator/>
+                    }
+                </View>
+                :
+                    (contextData.bookPostReducerState.bookPostData).filter((item) => checkForApplyed(item.requests) &&  item.title.toLowerCase().includes(search.toLowerCase())).length != 0 ?
+                        <View style={{ flex: 1 }}>
+                            <FlatList
+                                key={1}
+                                data={contextData.bookPostReducerState.bookPostData.filter((item) => checkForApplyed(item.requests) && item.title.toLowerCase().includes(search.toLowerCase()))}
+                                listMode="SCROLLVIEW"
+                                onEndReachedThreshold={0.5}
+                                onRefresh={() => onRefresh()}
+                                refreshing={false}
+                                onEndReached={() => onEndScroll()}
+                                keyExtractor={(item, index) => `key-${index}`}
+                                ListFooterComponent={isLoading && (<ActivityIndicator />)}
+                                ListFooterComponentStyle={{
+                                    marginVertical: 10 * unit,
+                                    width: '100%',
+                                    bottom: 0
+                                }}
+                                renderItem={({ item, index }) => {
+                                    return <View>
+                                        {
+                                            item.isDisplay && (
+                                                <TouchableOpacity style={CommonStyles.itemView}
+                                                    onPress={() => props.navigation.navigate('PostDetails', { item: item })}
+                                                >
+                                                    <View style={{ flex: 1 }}>
+                                                        <Text style={CommonStyles.font2Purple}>{item.title}</Text>
+                                                        <Text style={CommonStyles.font1Black}>{item.userID.firstName + " " + item.userID.lastName + ", " + item.userID.college}</Text>
+                                                        <Text style={CommonStyles.font2Purple}>{item.price + " ₹"}</Text>
+                                                    </View>
+                                                    <Image
+                                                        source={{ uri: item.coverURL }}
+                                                        style={CommonStyles.imageView3}
+                                                    />
+                                                </TouchableOpacity>
+                                            )
+                                        }
+                                    </View>
+                                }}
+                            />
+                        </View>
+                        :
+                        <View style={{ flex: 1, ...CommonStyles.centerAlignMent }}>
+                            {
+                                !isLoading ?
+                                    <Text style={CommonStyles.font2Purple}>No books Found</Text>
+                                    :
+                                    <ActivityIndicator />
+                            }
+                        </View>
+            }
         </View>
     )
 }
 
 const styles = StyleSheet.create({
-    container:{
-        flex:1,
-        backgroundColor:Colors.white,
-    },
     appBar:{
-        height:100 * unit,
-        backgroundColor:Colors.white,
+        backgroundColor:Colors.purple,
         justifyContent:'center',
+        paddingVertical:10* unit,
     },
     appBarBody:{
-        marginTop:20* unit,
         flexDirection:'row',
         alignItems:'center',
         justifyContent:'space-between'
     },
-    appBarTitle:{
-        fontSize:30 * unit,
-        color:Colors.purple,
-        fontWeight:'600',
-        marginLeft:20 * unit,
-    },
-    filterImage:{
-        height:25*unit,
-        width:25* unit,
-    },
-    filterButton:{
-        marginRight:20* unit,
-    },
-    searchView:{
-        width:width*0.96,
-        height:50* unit,
-        borderRadius:10 * unit,
-        borderColor:Colors.purple,
-        borderWidth:2,
-        alignSelf:'center',
-       // backgroundColor:Colors.blurPurple,
-        marginTop:10 * unit,
-        paddingRight: 10 * unit,
-        paddingLeft:50 * unit,
-        justifyContent:'center',
-    },
-    searchButton:{
-        position:'absolute',
-        width:50* unit,
-        height: 50 * unit,
-        top:-2,
-        left:-2,
-        alignItems:'center',
-        justifyContent:'center',
-
-    },
-    textinput: {
-        color: Colors.black,
-        fontSize: 15 * unit,
-        paddingVertical: 10 * unit,
-        height: 50 * unit,
-    },
-    displayView:{
-     flex:1,
-     marginVertical:10 * unit,
-     
-    },
-    itemView:{
-        width:width*0.96,
-        borderWidth:1,
-        borderRadius:10 * unit,
-        borderColor:Colors.purple,
-        alignSelf:'center',
-        marginVertical:5* unit,
-
-    },
-    itemViewBody:{
-        width:width*0.96-2,
-        borderRadius: 10 * unit,
-        backgroundColor:Colors.white,
-        flexDirection:'row',
-        alignItems:'center',
-        paddingRight: 15 * unit,
-        paddingVertical:10 * unit,
-    },
-    nameText:{
-        fontSize:18 * unit,
-        color:Colors.purple,
-        flexShrink: 1,
-    },
-    bookImage:{
-        height:100 * unit,
-        width:100 * unit,
-        borderRadius:50* unit,
-        borderColor: Colors.purple,
-        borderWidth: 2,
-    }
 })

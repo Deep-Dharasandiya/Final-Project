@@ -17,7 +17,7 @@ export default function TextFeild(props) {
             <Text style={styles.lable}>{props.value?props.lable:''}</Text>
             <View>
                 <TextInput
-                    style={{ ...styles.textinput, borderColor: color, }}
+                    style={{ ...styles.textinput, borderColor: color,height:props.ismultipleline?100* unit:50* unit }}
                     keyboardType={props.keypadtipe}
                     maxLength={props.maxlength}
                     secureTextEntry={props.secureText &&(!isView)}
@@ -68,6 +68,7 @@ const styles = StyleSheet.create({
         paddingRight: 55 * unit,
         paddingVertical: 10 * unit,
         marginTop: 5 * unit,
+        backgroundColor:Colors.white
     },
     lable:{
         marginLeft:13*unit,

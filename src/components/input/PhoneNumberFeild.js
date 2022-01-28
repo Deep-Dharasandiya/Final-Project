@@ -31,7 +31,7 @@ export default function PhoneNumberFeild(props) {
                     onBlur={() => onBlur()}
                 />
                 <View  style={{ ...styles.codeView, borderColor: color}}  >
-                    <Text style={{...styles.lable,color:Colors.black}}>+91</Text>
+                    <Text style={{...styles.lable,color:Colors.black,marginBottom:0}}>+91</Text>
                 </View>
 
 
@@ -57,11 +57,13 @@ const styles = StyleSheet.create({
         paddingLeft: width * 0.18,
         paddingRight: 10 * unit,
         paddingVertical: 10 * unit,
+
     },
     lable: {
         marginLeft: width * 0.05,
         fontSize: 13 * unit ,
-        color: Colors.black
+        color: Colors.black,
+        marginBottom:5* unit,
     },
     codeView:{
         position:'absolute',
@@ -72,6 +74,7 @@ const styles = StyleSheet.create({
         borderRadius:25* unit,
         borderWidth:1,
        justifyContent:'center',
+       alignItems:'center',
         backgroundColor:Colors.blurPurple
     },
     downArrow: {

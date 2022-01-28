@@ -1,11 +1,14 @@
 import React from 'react'
-import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native'
-import Colors from '../../constant/Colors'
-import { unit, width, height } from '../../constant/ScreenDetails'
-import PhoneNumberFeild from '../../components/input/PhoneNumberFeild'
+import { Text, View, Image, TouchableOpacity } from 'react-native'
+//styles
+import CommonStyles from '../CommonStyles'
+//utils
+import { unit } from '../../constant/ScreenDetails'
 import RoundedButton from '../../components/button/RoundedButton'
 import { isValidPassword } from '../../constant/Validation'
 import TextFeild from '../../components/input/textFeild'; 
+import { forgotPassword } from '../../networkServices/AuthenticationServices'
+import { aleartOn, toastOn } from '../../context/actions/commonActions'
 
 export default function ForgotPassword3(props) {
     const [password, setPassword] = React.useState('');
@@ -16,42 +19,52 @@ export default function ForgotPassword3(props) {
     function onChangeComfirmPassword(text) {
         setconfirmPassword(text);
     }
-    function onSend() {
+    async function onSend() {
         if (password != '' && confirmPassword !='') {
             if (isValidPassword(password)) {
                 if(password==confirmPassword){
-                    alert("password changed");
+                    const body = {
+                        contactNumber: props.route.params.contactNumber,
+                        password: password,
+                    }
+                    const response = await forgotPassword(body);
+                    if (response && response.isUpdate) {
+                        toastOn("Successfully password changed")
+                        props.navigation.pop();
+                        props.navigation.pop();
+
+                    }
                 }else{
-                    alert("Both password should be same")
+                    aleartOn("Both password should be same")
                 }
             } else {
-                alert("Enter Valid Password")
+                aleartOn("Enter Valid Password")
             }
 
         } else {
-            alert("Please enter the Both Password")
+            aleartOn("Please enter the Both Password")
         }
 
     }
     return (
-        <View style={styles.container}>
-            <View style={styles.headerView}>
+        <View style={CommonStyles.containerPurple}>
+            <View style={CommonStyles.headerView}>
                 <TouchableOpacity
                     onPress={() => props.navigation.pop()}
                 >
                     <Image
-                        style={styles.backArrow}
+                        style={CommonStyles.icon1Style}
                         resizeMode="contain"
                         source={require('../../assets/back/back.png')}
                     />
                 </TouchableOpacity>
-                <Text style={styles.headerText}>
+                <Text style={{...CommonStyles.font4White,marginLeft:15* unit}}>
                     Change the Password
                 </Text>
             </View>
-            <View style={styles.card}>
-                <View style={styles.textView}>
-                    <Text style={styles.simpleText}>
+            <View style={CommonStyles.cardWhite}>
+                <View style={CommonStyles.textView}>
+                    <Text style={CommonStyles.font1Black}>
                         Please enter your New password.
                     </Text>
                 </View>
@@ -67,57 +80,14 @@ export default function ForgotPassword3(props) {
                     value={confirmPassword}
                     secureText={true}
                 />
-                <View style={{ marginTop: 10 * unit }}>
-                    <RoundedButton
-                        lable={"Submit"}
-                        onClick={onSend}
-                        dark={true}
-                    />
-                </View>
-
+                <RoundedButton
+                    lable={"Submit"}
+                    onClick={onSend}
+                    dark={true}
+                    isEnable={password != '' && confirmPassword != ''}
+                    Style={{marginTop:20* unit}}
+                />
             </View>
         </View>
     )
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: Colors.purple,
-    },
-    headerView: {
-        flexDirection: 'row',
-        marginTop: 60 * unit,
-        alignItems: 'center',
-        width: width * 0.85,
-        alignSelf: 'center'
-
-    },
-    backArrow: {
-        height: 20 * unit,
-        width: 20 * unit,
-    },
-    headerText: {
-        marginLeft: 20 * unit,
-        fontSize: 25 * unit,
-        color: Colors.white,
-        fontWeight: '500'
-    },
-    card: {
-        marginTop: height * 0.03,
-        flex: 1,
-        backgroundColor: Colors.white,
-        borderTopRightRadius: 40 * unit,
-        borderTopLeftRadius: 40 * unit,
-    },
-    textView: {
-        width: width * 0.85,
-        alignSelf: 'center',
-        marginTop: 20 * unit
-    },
-    simpleText: {
-        fontSize: 17 * unit,
-        color: Colors.black,
-        marginBottom: 10 * unit
-    },
-})

@@ -1,19 +1,48 @@
 import React from 'react'
-import { StyleSheet, Text, View, Image, ScrollView,StatusBar,KeyboardAvoidingView} from 'react-native'
+import { Text, View, Image, TouchableOpacity, Keyboard} from 'react-native'
+import messaging from '@react-native-firebase/messaging';
+//styles
+import CommonStyles from './CommonStyles';
+//utils
 import {height, unit, width} from '../constant/ScreenDetails'
-import Colors from '../constant/Colors';
 import TextFeild from '../components/input/textFeild'; 
 import CheckBox from '../components/input/CheckBox';
 import RoundedButton from '../components/button/RoundedButton';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import { isPhoneNumber, isValidPassword } from '../constant/Validation';
 import PhoneNumberFeild from '../components/input/PhoneNumberFeild';
+import { login } from '../networkServices/AuthenticationServices';
+import { aleartOn, setLogin } from '../context/actions/commonActions';
+import { ScrollView } from 'react-native-gesture-handler';
+
 
 export default function Login(props) {
+
     const [contactNumber, setContactNumber] = React.useState('');
     const [password, setPassword] = React.useState('');
     const [isTerms , setIsTearms] = React.useState(false);
-    const [isRemember , setIsRemember] = React.useState(false);
+    const [isKeyboardVisible, setKeyboardVisible] = React.useState(false);
+
+    React.useEffect(() => {
+        //keyBoard Handler
+        const keyboardDidShowListener = Keyboard.addListener(
+            'keyboardDidShow',
+            () => {
+                setKeyboardVisible(true); // or some other action
+            }
+        );
+        const keyboardDidHideListener = Keyboard.addListener(
+            'keyboardDidHide',
+            () => {
+                setKeyboardVisible(false); // or some other action
+            }
+        );
+
+        return () => {
+            keyboardDidHideListener.remove();
+            keyboardDidShowListener.remove();
+        };
+    }, []);
+
     function onChangeContactNumber(text){
         setContactNumber(text);
     }
@@ -22,29 +51,6 @@ export default function Login(props) {
     }
     function onCheckTearms(){
         setIsTearms(!isTerms);
-    }
-    function onCheckRemember(){
-        setIsRemember(!isRemember);
-    }
-    function onLogin(){
-        props.navigation.navigate('BottomTabNavigation');
-        /*if(contactNumber !='' && password != ''){
-            if (isPhoneNumber(contactNumber)){
-              if (isValidPassword(password)) {
-                  if (isTerms) {
-                      alert("Successfully Login")
-                  } else {
-                      alert("Please accept the Terms and Condition")
-                  }
-              } else {
-                  alert("Password not valid")
-              }
-          }else{
-              alert("Enter Valid Contact Number")
-          }
-        }else{
-            alert("Please enter both Register Contact Number and password")
-        }*/
     }
     function onRegister(){
         props.navigation.navigate('Register1');
@@ -61,27 +67,59 @@ export default function Login(props) {
     function onPolicy(){
 
     }
+    async function onLogin() {
+        if (contactNumber != '' && password != '') {
+            if (isPhoneNumber(contactNumber)) {
+                if (isValidPassword(password)) {
+                    if (isTerms) {
+                        const body = {
+                            contactNumber: "+91" + contactNumber,
+                            password: password,
+                            fcmToken: await messaging().getToken()
+                        }
+                        const response = await login(body);
+                        if (response && response.isLogin) {
+                            setLogin(response.data);
+                            props.navigation.navigate('BottomTabNavigation');
+                        } else {
+                            if (response) {
+                                aleartOn("Please enter correct credential");
+                            }
+                        }
+                    } else {
+                        aleartOn("Please accept the Terms and Condition")
+                    }
+                } else {
+                    aleartOn("Password not valid")
+                }
+            } else {
+                aleartOn("Enter Valid Contact Number")
+            }
+        } else {
+            aleartOn("Please enter both Register Contact Number and password")
+        }
+    }
     const highlightTerms = string =>
       <Text 
-        style={styles.underLineText}
+        style={CommonStyles.underLineFontPurple}
         onPress={()=>onTerms()}
       >{string} </Text>
       
 
     const highlightPolicy = string =>
         <Text 
-             style={styles.underLineText}
+            style={CommonStyles.underLineFontPurple}
             onPress={onPolicy}
         >{string} </Text>
         
     return (
-        <View style={styles.container}>
+        <View style={CommonStyles.containerPurple}>
             <Image
-                style={styles.logo}
+                style={{ ...CommonStyles.HorizontalLogo ,marginTop: height * 0.05}}
                 resizeMode="contain"
                 source={require('../assets/logoHorizontal/logo.png')}
             />
-           <View style={styles.card}>
+           <ScrollView style={{...CommonStyles.cardWhite,marginTop:height*0.05}}>
                 <PhoneNumberFeild
                     lable={"Contact Number(XXXXXXXXXX)"}
                     onChange={onChangeContactNumber}
@@ -93,107 +131,48 @@ export default function Login(props) {
                     value={password}
                     secureText={true}
                 />
-                <View style={styles.termsView}>
+                <View style={{flexDirection:'row',...CommonStyles.centerAlignMent,width:width*0.85,alignSelf:'center',marginTop:15* unit}}>
                     <CheckBox 
                         onCheck={onCheckTearms}
                         value={isTerms}
                     />
-                    <View style={{ marginLeft: 10 * unit, flexDirection: 'row',alignItems:'center',justifyContent:'center'}}>
-                        <Text style={styles.simpleText}>I accept {highlightTerms('Terms & Conditions ')}and consent to the {highlightPolicy('Privacy Policy')}.</Text>
+                    <View style={{ flexDirection: 'row',...CommonStyles.centerAlignMent,marginLeft: 10 * unit}}>
+                        <Text style={CommonStyles.font1Black}>I accept {highlightTerms('Terms & Conditions ')}and consent to the {highlightPolicy('Privacy Policy')}.</Text>
                     </View>
                 </View>
                 <RoundedButton
                     lable={"Log in"}
                     onClick={onLogin}
                     dark={true}
+                    isEnable={contactNumber != '' && password != '' && isTerms}
                 />
+                <TouchableOpacity
+                    onPress={onForgotPassword}
+                style={{ marginTop: 15 * unit,alignSelf:'center',width:width*0.85}}
+                >
+                    <Text style={{...CommonStyles.font1Purple,alignSelf:'flex-end'}}>Forgot Password?</Text>
+                </TouchableOpacity>
+                
+           </ScrollView>
+            {
+                !isKeyboardVisible && (
+                    <View style={CommonStyles.LoginLandingBottomView}>
+                        <TouchableOpacity
+                            onPress={onFAQ}
+                        >
+                            <Text style={{ ...CommonStyles.font2Purple, marginBottom: 5 * unit }}>Frequently Asked Questions</Text>
+                        </TouchableOpacity>
 
-                <View style={{flexDirection:'row',justifyContent:'space-between',width:width*0.85,alignSelf:'center',marginTop:15* unit,alignItems:'center'}}>
-                    <View style={{flexDirection:'row',alignItems:'center'}}>
-                        <CheckBox 
-                            onCheck={onCheckRemember}
-                            value={isRemember}
+                        <RoundedButton
+                            lable={"Register"}
+                            onClick={onRegister}
+                            dark={false}
+                            isEnable={true}
                         />
-                        <View style={{ marginLeft: 10 * unit,}}>
-                            <Text style={styles.simpleText}>Remember Me</Text>
-                        </View>
+                        <Text style={{ ...CommonStyles.font2Purple, marginTop: 5 * unit }}>version 1.01.01</Text>
                     </View>
-                    <TouchableOpacity
-                        onPress={onForgotPassword}
-                    >
-                        <Text style={{...styles.simpleText,color:Colors.purple}}>Forgot Password?</Text>
-                    </TouchableOpacity>
-                </View>
-                <KeyboardAvoidingView style={styles.bottomView}>
-                    <TouchableOpacity
-                        onPress={onFAQ}
-                    >
-                        <Text style={styles.faq}>Frequently Asked Questions</Text>
-                    </TouchableOpacity>
-
-                    <RoundedButton
-                        lable={"Register"}
-                        onClick={onRegister}
-                        dark={false}
-                    />
-                    <Text style={styles.version}>version 1.01.01</Text>
-                </KeyboardAvoidingView>
-              
-           </View>
+                )
+            }
         </View>
     )
 }
-
-const styles = StyleSheet.create({
-    container:{
-        flex:1,
-        backgroundColor: Colors.purple,
-    },
-    card:{
-        marginTop:height*0.05,
-        flex:1,
-        backgroundColor:Colors.white,
-        borderTopRightRadius:40 * unit,
-        borderTopLeftRadius: 40 * unit,
-    },
-    logo: {
-        marginTop: height * 0.08,
-        alignSelf: 'center',
-        width: width * 0.65,
-        height: (width * 0.65) / 3.5625
-    },
-    termsView: {
-        alignSelf: 'center',
-        marginTop: 15 * unit,
-        flexDirection: 'row',
-        width: width * 0.85,
-    },
-    simpleText:{
-        fontSize: 15 * unit,
-    },
-    underLineText: {
-        fontSize: 15 * unit,
-        color:Colors.purple,
-        textDecorationLine:'underline',
-    },
-    bottomView: {
-        width: width,
-        alignItems: 'center',
-        position: 'absolute',
-        left: 0,
-        bottom: 15 * unit,
-        alignItems: 'center',
-        justifyContent: 'center',
-
-    },
-    faq: {
-        marginBottom: 10 * unit,
-        fontSize: 17 * unit,
-        color: Colors.purple
-    },
-    version: {
-        marginTop: 15 * unit,
-        fontSize: 16 * unit,
-        color: Colors.purple
-    }
-})

@@ -1,5 +1,8 @@
 import React from 'react'
 import { StyleSheet, Text, View ,Image,TouchableOpacity,FlatList} from 'react-native'
+//styles
+import CommonStyles from './CommonStyles'
+//utils
 import Colors from '../constant/Colors'
 import {unit,width,height } from '../constant/ScreenDetails'
 
@@ -14,79 +17,65 @@ export default function FAQ(props) {
     }
     const faqData=[
         {
-            que:"What is VETpass?",
-            ans:"Our most important job is to help you take the best care of your pet and take the stress out of being a pet owner. \n Got a pet problem? We are here to help."
+            que:"What is BookVerse ?",
+            ans:"It is a platform where you can share the college books and notes that you no longer want and the juniors can easily buy them from the platform."
         },
         {
-            que: "What can i use VETpass for?",
-            ans: "Answer of What can i use VETpass for"
+            que: "What can I use BookVerse For ?",
+            ans: "You can search for your subject books if you want to buy them.\nIf you want to share your unwanted subject books/ notes, then you can sell them on the platform."
         },
         {
-            que: "When to use VETpass?",
-            ans: "Answer of When to use VETpass"
+            que: "Would the platform deduct any commission for selling books ?",
+            ans: "No, this platform allows students to sell their books without any kind of commission."
         },
         {
-            que: "Do i need to have pet insurance to use VETpass?",
-            ans: "Answer of Do i need to have pet insurance to use VETpass"
-        },
-        {
-            que: "Can i use VETpass in an emergency situation?",
-            ans: "Answer of Can i use VETpass in an emergency situation"
-        },
-        {
-            que: "When can i access VETpass and How much does it cost?",
-            ans: "Answer of When can i access VETpass and How much does it cost"
-        },
-        {
-            que: "Can i get a discount for more frequent vet appointments?",
-            ans: "Answer of Can i get a discount for more frequent vet appointments?"
+            que: "We can sell or buy books accross what region ?",
+            ans: "You can buy or sell books from the students studying in the colleges that are in your city."
         },
     ]
     return (
-        <View style={styles.container}>
-            <View style={styles.headerView}>
+        <View style={CommonStyles.containerPurple}>
+            <View style={CommonStyles.headerView}>
                 <TouchableOpacity
                     onPress={() => props.navigation.pop()}
                 >
                     <Image
-                        style={styles.backArrow}
+                        style={CommonStyles.icon1Style}
                         resizeMode="contain"
                         source={require('../assets/back/back.png')}
                     />
                 </TouchableOpacity>
-                <Text style={styles.headerText}>
+                <Text style={{...CommonStyles.font3White,marginLeft:15* unit}}>
                     Frequently Asked Questions
                 </Text>
             </View>
-            <View style={styles.card}>
+            <View style={{...CommonStyles.cardWhite,paddingHorizontal:width*0.075}}>
                 <FlatList
                     key={1}
                     data={faqData}
                     listMode="SCROLLVIEW"
-                    keyExtractor={(item, index) => `key-${index}`}
+                    keyExtractor={(iem, index) => `key-${index}`}
                     ListHeaderComponent={() => (
-                        <View style={styles.textView}>
-                            <Text style={styles.subTitleText}>
-                                Wondering how Bookverse works? We have put together a list of all our  most frequetly asked questions.
-                            </Text>
-                        </View>
+                        <Text style={{...CommonStyles.font1Black,marginVertical:15*unit}}>
+                            Wondering how BookVerse works? We have put together a list of all our  most frequetly asked questions.
+                        </Text>
                     )}
                     renderItem={({ item ,index}) => {
                         return <View style={{ marginBottom: 10 * unit,}}>
                             <TouchableOpacity 
-                                style={styles.queView}
+                                style={styles.itemView}
                                 onPress={()=>openClose(index)}
                             >
                             <Text>{item.que}</Text>
                                 <Image
-                                    style={styles.sign}
+                                    style={{position:'absolute',right:15* unit,...CommonStyles.icon1Style}}
                                     resizeMode="contain"
                                     source={isShow.filter((i) => i == (index + 1)) == index + 1 ? require('../assets/close/close.png') : require('../assets/more/more.png')}
                                 />
                             </TouchableOpacity>
                             {
                                 (isShow.filter((i)=>i==(index+1))==index+1) &&(
-                                    <View style={styles.ansView}>
+                                    <View style={{...styles.itemView,backgroundColor:Colors.white}}>
                                         <Text>{item.ans}</Text>
                                     </View>
                                 )
@@ -101,45 +90,7 @@ export default function FAQ(props) {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: Colors.purple,
-    },
-    headerView: {
-        flexDirection: 'row',
-        marginTop: 60 * unit,
-        alignItems: 'center',
-        width: width * 0.85,
-        alignSelf: 'center'
-
-    },
-    backArrow: {
-        height: 20 * unit,
-        width: 20 * unit,
-    },
-    headerText: {
-        marginLeft: 20 * unit,
-        fontSize: 21 * unit,
-        color: Colors.white,
-        fontWeight: '500'
-    },
-    card: {
-        marginTop: height * 0.03,
-        flex: 1,
-        backgroundColor: Colors.white,
-        borderTopRightRadius: 40 * unit,
-        borderTopLeftRadius: 40 * unit,
-    },
-    textView:{
-        width:width*0.85,
-        alignSelf:'center',
-        paddingVertical:20* unit
-    },
-    subTitleText:{
-        color:Colors.black,
-        fontSize:15*unit,
-    },
-    queView:{
+    itemView:{
         width:width*0.85,
         alignSelf:'center',
         padding:12 * unit,
@@ -148,19 +99,4 @@ const styles = StyleSheet.create({
         borderRadius:10 * unit,
         justifyContent:'center',
     },
-    ansView: {
-        width: width * 0.85,
-        alignSelf: 'center',
-        paddingHorizontal: 12 * unit,
-        marginVertical: 10 * unit,
-        justifyContent: 'center',
-    },
-    sign: {
-        position: 'absolute',
-        height: 18 * unit,
-        width: 18 * unit,
-        right: 15 * unit,
-
-    },
-
 })

@@ -1,23 +1,31 @@
 import React from "react";
-import {StyleSheet,View, Text, TouchableOpacity,Image} from 'react-native';
+import {StyleSheet,View, Text, TouchableOpacity,Image,StatusBar} from 'react-native';
+import SplashScreen from 'react-native-splash-screen';
 import Colors from "../constant/Colors";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { width,unit,height } from "../constant/ScreenDetails";
 
 const Tab = createBottomTabNavigator();
 
-import HomeNavigation from "./HomeNavigation";
 import UploadNavigation from "./UploadNavigation";
 import ChatNavigation from "./ChatNavigation";
+import Drawer from './Drawer';
 
 export default function BottomTabNavigation() {
+  React.useEffect(() => {
+   // StatusBar.setBarStyle('dark-content', true);
+    SplashScreen.hide();
+  }, []);
     return (
       <Tab.Navigator
+        screenOptions={{
+          "tabBarHideOnKeyboard": "true",
+        }}
       initialRouteName="home"
       tabBar={props => <MyTabBar {...props} />}
       >
-        <Tab.Screen name="Home" component={HomeNavigation} options={{headerShown:false}}/>
-        <Tab.Screen name="Upload" component={UploadNavigation} options={{headerShown:false}}/>
+        <Tab.Screen name="Home" component={Drawer} options={{headerShown:false}}/>
+        <Tab.Screen name="Upload Book" component={UploadNavigation} options={{ headerShown: false }}/>
         <Tab.Screen name="Chat" component={ChatNavigation} options={{ headerShown: false }}/>
     </Tab.Navigator>
     )
@@ -26,6 +34,7 @@ export default function BottomTabNavigation() {
 
 function MyTabBar({state, descriptors, navigation}) {
   return (
+    <View style={{backgroundColor:Colors.blurPurple}}>
     <View style={styles.tabBar}>
 
       {state.routes.map((route, index) => {
@@ -41,13 +50,13 @@ function MyTabBar({state, descriptors, navigation}) {
 
         const iconActive = {
           Home: require('../assets/homeActive/homeActive.png'),
-          Upload:require('../assets/uploadActive/uploadActive.png'),
+          UploadBook:require('../assets/uploadActive/uploadActive.png'),
           Chat: require('../assets/chatActive/chatActive.png'),
         };
-        const iconBlur = {
-          Home: require('../assets/homeBlur/homeBlur.png'),
-          Upload: require('../assets/uploadBlur/uploadBlur.png'),
-          Chat: require('../assets/chatBlur/chatBlur.png'),
+        const iconDeactive = {
+          Home: require('../assets/homeDeactive/home.png'),
+          UploadBook: require('../assets/uploadDeactive/upload.png'),
+          Chat: require('../assets/chatDeactive/chat.png'),
         };
 
         const onPress = () => {
@@ -82,16 +91,15 @@ function MyTabBar({state, descriptors, navigation}) {
             <View style={{ alignItems: 'center'}}>
               {
                 isFocused?
-                  <View style={styles.activeTabButton}>
                     <Image
                     style={styles.tabIcon}
-                      source={iconActive[label]}
+                      source={iconActive[label.replace(" ","")]}
                     />
-                  </View>
+          
                   :
                   <Image
                     style={styles.tabIcon}
-                    source={iconBlur[label]}
+                    source={iconDeactive[label.replace(" ", "")]}
                   />
               }
               
@@ -100,28 +108,25 @@ function MyTabBar({state, descriptors, navigation}) {
         );
       })}
     </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   tabBar: {
     flexDirection: 'row',
-    height: 50*unit,
+    height: 55*unit,
+    paddingTop:5* unit,
     alignItems: 'center',
     paddingHorizontal: 5 * unit,
-    backgroundColor: Colors.blurPurple,
+    borderRadius:10*unit,
+    marginBottom:8* unit,
+    marginHorizontal:8* unit,
+    marginTop:4* unit,
+    backgroundColor: Colors.purple,
   },
-  activeTabButton: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: 60 * unit,
-    width: 60 * unit,
-    borderRadius: 30 * unit,
-    marginBottom: 10 * unit,
-    backgroundColor: Colors.blurPurple
-  },
-  tabIcon: { 
-    height: 20 * unit, 
-    width: 20 * unit,
+  tabIcon: {
+    height: 23 * unit, 
+    width: 23 * unit,
   }
 })

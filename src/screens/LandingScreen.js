@@ -1,15 +1,38 @@
 import React from 'react'
-import { StyleSheet, Text, View, Image, ScrollView, StatusBar } from 'react-native'
+import {  Text, View, Image, StatusBar, Keyboard, TouchableOpacity} from 'react-native'
 import SplashScreen from 'react-native-splash-screen';
-import { unit, width,height } from '../constant/ScreenDetails'
-import Colors from '../constant/Colors';
+//Styles
+import CommonStyles from './CommonStyles';
+//utils
+import { unit } from '../constant/ScreenDetails'
 import RoundedButton from '../components/button/RoundedButton';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+
+
 export default function LandingScreen(props) {
+    const [isKeyboardVisible, setKeyboardVisible] = React.useState(false);
+
     React.useEffect(() => {
-        StatusBar.setBarStyle('dark-content', true);
         SplashScreen.hide();
+
+        //KeyBoard Handler
+        const keyboardDidShowListener = Keyboard.addListener(
+            'keyboardDidShow',
+            () => {
+                setKeyboardVisible(true); 
+            }
+        );
+        const keyboardDidHideListener = Keyboard.addListener(
+            'keyboardDidHide',
+            () => {
+                setKeyboardVisible(false);
+            }
+        );
+        return () => {
+            keyboardDidHideListener.remove();
+            keyboardDidShowListener.remove();
+        };
     }, []);
+
     function onSignIn(){
         props.navigation.navigate('Login');
     }
@@ -19,76 +42,39 @@ export default function LandingScreen(props) {
     function onFAQ() {
         props.navigation.navigate('FAQ');
     }
+
     return (
-        <View style={styles.container}>
-            {/* <Image
-                style={styles.bgimage}
-                resizeMode="contain"
-                source={require('../assets/bgPattern/bgPattern.png')}
-            /> */}
+        <View style={CommonStyles.containerWhite}>
             <Image
-                style={styles.logo}
+                style={{...CommonStyles.VerticalLogo,marginTop:150* unit}}
                 source={require('../assets/logoVertical/logo.png')}
             />
-            <View style={styles.bottomView}>
-                <TouchableOpacity
-                    onPress={onFAQ}
-                >
-                    <Text style={styles.faq}>Frequently Asked Questions</Text>
-                </TouchableOpacity>
+            {
+                !isKeyboardVisible &&(
+                    <View style={CommonStyles.LoginLandingBottomView}>
+                        <TouchableOpacity
+                            onPress={onFAQ}
+                        >
+                            <Text style={{...CommonStyles.font2Purple,marginBottom:5* unit}}>Frequently Asked Questions</Text>
+                        </TouchableOpacity>
 
-                <RoundedButton
-                    lable={"Log in"}
-                    onClick={onSignIn}
-                    dark={false}
-                />
-                <RoundedButton
-                    lable={"Register"}
-                    onClick={onRegister}
-                    dark={true}
-                />
-                <Text style={styles.version}>version 1.01.01</Text>
-            </View>
+                        <RoundedButton
+                            lable={"Log in"}
+                            onClick={onSignIn}
+                            dark={false}
+                            isEnable={true}
+                        />
+                        <RoundedButton
+                            lable={"Register"}
+                            onClick={onRegister}
+                            dark={true}
+                            isEnable={true}
+                        />
+                        <Text style={{ ...CommonStyles.font2Purple, marginTop: 5 * unit }}>version 1.01.01</Text>
+                    </View>
+                )
+            }
+            
         </View>
     )
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-
-    },
-    bgimage:{
-        position:'absolute',
-        top:0,
-        right:0,
-        height:height,
-        width:width,
-    },
-    logo:{
-        marginTop:150 * unit,
-        alignSelf:'center',
-        width:width*0.65,
-        height:  (width * 0.65)/1.38356
-    },
-    bottomView:{
-        width:width,
-        alignItems:'center',
-        position:'absolute',
-        left:0,
-        bottom:20,
-        alignItems:'center',
-        justifyContent:'center'
-    },
-    faq:{
-        marginBottom: 15 * unit,
-        fontSize: 18 * unit,
-        color: Colors.purple
-    },
-    version:{
-        marginTop:15 * unit,
-        fontSize: 18 * unit,
-        color:Colors.purple
-    }
-    
-})

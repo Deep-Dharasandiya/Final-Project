@@ -15,7 +15,9 @@ export default function MediaSelection(props) {
                     props.flagChange(false);
                 }}
             >
-                <Text>{item.value}</Text>
+                <Text>{
+                    !props.isFilter ? item.value : item.value + '  ✅'
+                }</Text>
             </TouchableOpacity>
         )
     })
@@ -33,7 +35,7 @@ export default function MediaSelection(props) {
                     <View style={styles.container}>
                         <ScrollView>
                             <Text style={styles.title} >
-                                {props.lable}
+                               {props.lable }
                             </Text>
                             {option}
                         </ScrollView>
@@ -49,7 +51,7 @@ const styles = StyleSheet.create({
     body: {
         width: width * 0.85,
         alignSelf: 'center',
-        marginTop: 10 * unit
+        marginTop: 0* unit
     },
     btnStyle: {
         height: 50 * unit,

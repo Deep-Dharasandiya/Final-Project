@@ -1,5 +1,10 @@
 import React from 'react'
-import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView } from 'react-native'
+import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView ,ActivityIndicator} from 'react-native'
+import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
+import storage from '@react-native-firebase/storage';
+//styles
+import CommonStyles from '../CommonStyles';
+//utils
 import Colors from '../../constant/Colors'
 import { unit, width, height } from '../../constant/ScreenDetails'
 import RoundedButton from '../../components/button/RoundedButton'
@@ -7,9 +12,9 @@ import { isValidPassword, isEmail} from '../../constant/Validation'
 import TextFeild from '../../components/input/textFeild';
 import DropDawnList from '../../components/input/DropDawnList'
 import MediaSelection from '../../components/input/MediaSelection'
-import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import CheckBox from '../../components/input/CheckBox';
-import storage from '@react-native-firebase/storage';
+import { registerUser } from '../../networkServices/AuthenticationServices'
+import { aleartOn, toastOn } from '../../context/actions/commonActions'
 
 export default function Register3(props) {
     const [profileUri, setProfileUri] = React.useState('');
@@ -22,6 +27,9 @@ export default function Register3(props) {
     const [password, setPassword] = React.useState('');
     const [confirmPassword, setconfirmPassword] = React.useState('');
     const [isTerms, setIsTearms] = React.useState(false);
+    const [firebaseUri , setFirebaseUri] = React.useState('');
+    const [imageLoader , setImageLoader] = React.useState(false);
+
     let cityData = [{
         value: 'Gandhinagar',
     }, {
@@ -41,6 +49,7 @@ export default function Register3(props) {
     }, {
         value: 'Gallery',
     }];
+    
     function onChangeFirstName(text) {
         setFirstName(text);
     }
@@ -83,21 +92,23 @@ export default function Register3(props) {
     }
     const highlightTerms = string =>
         <Text
-            style={styles.underLineText}
+            style={CommonStyles.underLineFontPurple}
             onPress={() => onTerms()}
         >{string} </Text>
 
 
     const highlightPolicy = string =>
         <Text
-            style={styles.underLineText}
+            style={CommonStyles.underLineFontPurple}
             onPress={onPolicy}
         >{string} </Text>
 
     async function uploadImage(uri){
-        const reference = storage().ref(`Profile Picture/Profile_${"1212124514"}.png`);
+        setImageLoader(true);
+        const reference = storage().ref(`Profile Picture/Profile_${props.route.params.contactNumber}.png`);
         await reference.putFile(uri);
-        console.log(await storage().ref(`Profile Picture/Profile_${"1212124514"}.png`).getDownloadURL())
+        setFirebaseUri(await storage().ref(`Profile Picture/Profile_${props.route.params.contactNumber}.png`).getDownloadURL())
+        setImageLoader(false);
     }
     const options = {
         storageOptions: {
@@ -115,6 +126,7 @@ export default function Register3(props) {
             } else {
                 if (response.hasOwnProperty('assets')) {
                     setProfileUri(response.assets[0]['uri']);
+                    uploadImage(response.assets[0]['uri']);
                 }
             }
         });
@@ -127,62 +139,81 @@ export default function Register3(props) {
             } else {
                 if (response.hasOwnProperty('assets')) {
                     setProfileUri(response.assets[0]['uri']);
-                    //uploadImage(response.assets[0]['uri']);
+                    uploadImage(response.assets[0]['uri']);
                 }
 
             }
         });
 
     }
-    function onRegister() {
-        if (firstName !='' && lastName !='' && email!='' && city!='' && collage !='' && password != '' && confirmPassword != '') {
-            if(profileUri !=''){
-                if (isEmail(email)) {
-                    if (isValidPassword(password)) {
-                        if (password == confirmPassword) {
-                            if(isTerms){
-                                alert("password changed");
-                            }else{
-                                alert("Please accept the Terms and Condition")
+    async function onRegister() {
+        if(!imageLoader){
+            if (firstName != '' && lastName != '' && email != '' && city != '' && collage != '' && password != '' && confirmPassword != '' && firebaseUri != '') {
+                if (profileUri != '') {
+                    if (isEmail(email)) {
+                        if (isValidPassword(password)) {
+                            if (password == confirmPassword) {
+                                if (isTerms) {
+                                    const body = {
+                                        firstName: firstName,
+                                        lastName: lastName,
+                                        email: email,
+                                        contactNumber: props.route.params.contactNumber,
+                                        city: city,
+                                        college: collage,
+                                        password: password,
+                                        profileURL: firebaseUri,
+                                        fcmToken:'',
+                                    }
+                                   const response= await registerUser(body);
+                                    if (response && response.isRegister){
+                                        toastOn("Sucessfully Register.")
+                                       props.navigation.pop();
+                                       props.navigation.pop();
+                                   }
+                                } else {
+                                    aleartOn("Please accept the Terms and Condition")
+                                }
+                            } else {
+                                aleartOn("Both password should be same")
                             }
                         } else {
-                            alert("Both password should be same")
+                            aleartOn("Enter Valid Password")
                         }
                     } else {
-                        alert("Enter Valid Password")
+                        aleartOn("Enter Valid Email address")
                     }
                 } else {
-                    alert("Enter Valid Email address")
+                    aleartOn("Please select the prifile picture")
                 }
-            }else{
-                alert("Please select the prifile picture")
+            } else {
+                aleartOn("Please enter all the details")
             }
-        } else {
-            alert("Please enter all the details")
+        }else{
+            aleartOn("Please wait to upload image")
         }
-
     }
     return (
-        <View style={styles.container}>
-            <View style={styles.headerView}>
+        <View style={CommonStyles.containerPurple}>
+            <View style={CommonStyles.headerView}>
                 <TouchableOpacity
                     onPress={() => props.navigation.pop()}
                 >
                     <Image
-                        style={styles.backArrow}
+                        style={CommonStyles.icon1Style}
                         resizeMode="contain"
                         source={require('../../assets/back/back.png')}
                     />
                 </TouchableOpacity>
-                <Text style={styles.headerText}>
+                <Text style={{...CommonStyles.font4White,marginLeft:15* unit}}>
                     Register
                 </Text>
             </View>
-            <View style={styles.card}>
+            <View style={CommonStyles.cardWhite}>
                 <ScrollView>
-                <View style={styles.textView}>
-                    <Text style={styles.simpleText}>
-                        Please enter your Details for Registration on Bookverse.
+                <View style={CommonStyles.textView}>
+                    <Text style={CommonStyles.font1Black}>
+                        Please enter your Details for Registration on Bookerse.
                     </Text>
                 </View>
                 <MediaSelection
@@ -193,29 +224,40 @@ export default function Register3(props) {
                     fn={onChangeMedia}
                 />
                 <TouchableOpacity
-                    style={styles.profileImage}
+                        style={{ ...CommonStyles.imageView2, alignSelf: 'center' ,borderWidth:0}}
                     onPress={() => setMediaFlag(true)}
                 >
                     {
                         profileUri?
-                        <Image
-                            source={{ uri: profileUri }}
-                            style={styles.imgstyle} 
-                        />
+                        <View>
+                            <Image
+                                source={{ uri: profileUri }}
+                                style={CommonStyles.imageView2}
+                            />
+                            {
+                                imageLoader &&(
+                                    <ActivityIndicator
+                                        style={{ position: 'absolute', top: 63 * unit, right: 63 * unit }}
+                                    />
+                                )
+                            }
+                        </View>
+                        
         
                         :
-                        <View style={{ alignItems: 'center' }}>
+                        <View style={{...CommonStyles.imageView2,...CommonStyles.centerAlignMent}}>
                             <Image
                                 style={styles.pictureSign}
                                 resizeMode="contain"
                                 source={require('../../assets/picture/picture.png')}
                             />
-                            <Text style={styles.profileLable}>Profile Image:</Text>
+                            <Text style={{...CommonStyles.font1Black,marginTop:10* unit}}>Profile Image:</Text>
+                            
                         </View>
                     }
                      
                 </TouchableOpacity>
-                    <Text style={styles.profileLable}>{profileUri ? "Profile Image:" : ''}</Text>
+                    <Text style={{...CommonStyles.font1Black,textAlign:'center',marginTop:5* unit}}>{profileUri ? "Profile Image:" : ''}</Text>
                 <TextFeild
                     lable={"First Name"}
                     onChange={onChangeFirstName}
@@ -261,17 +303,18 @@ export default function Register3(props) {
                         onCheck={onCheckTearms}
                         value={isTerms}
                     />
-                    <View style={{ marginLeft: 10 * unit, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
-                            <Text style={styles.normalText}>I accept {highlightTerms('Terms & Conditions ')}and consent to the {highlightPolicy('Privacy Policy')}.</Text>
+                        <View style={{ flexDirection: 'row', ...CommonStyles.centerAlignMent, marginLeft: 10 * unit }}>
+                            <Text style={CommonStyles.font1Black}>I accept {highlightTerms('Terms & Conditions ')}and consent to the {highlightPolicy('Privacy Policy')}.</Text>
                     </View>
                 </View>
-                <View style={{ marginVertical: 20 * unit }}>
-                    <RoundedButton
-                        lable={"Register"}
-                        onClick={onRegister}
-                        dark={true}
-                    />
-                </View>
+                <RoundedButton
+                    lable={"Register"}
+                    onClick={onRegister}
+                    Style={{ marginTop:20* unit,marginBottom:20* unit}}
+                    dark={true}
+                        isEnable={firstName != '' && lastName != '' && email != '' && city != '' && collage != '' && password != '' && confirmPassword != '' 
+                        && firebaseUri != '' && isTerms&&!imageLoader}
+                />
                 </ScrollView>
             </View>
         </View>
@@ -279,82 +322,10 @@ export default function Register3(props) {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: Colors.purple,
-    },
-    headerView: {
-        flexDirection: 'row',
-        marginTop: 60 * unit,
-        alignItems: 'center',
-        width: width * 0.85,
-        alignSelf: 'center'
-
-    },
-    backArrow: {
-        height: 20 * unit,
-        width: 20 * unit,
-    },
-    headerText: {
-        marginLeft: 20 * unit,
-        fontSize: 25 * unit,
-        color: Colors.white,
-        fontWeight: '500'
-    },
-    card: {
-        marginTop: height * 0.03,
-        flex: 1,
-        backgroundColor: Colors.white,
-        borderTopRightRadius: 40 * unit,
-        borderTopLeftRadius: 40 * unit,
-    },
-    textView: {
-        width: width * 0.85,
-        alignSelf: 'center',
-        marginTop: 20 * unit
-    },
     termsView: {
         alignSelf: 'center',
         marginTop: 15 * unit,
         flexDirection: 'row',
         width: width * 0.85,
     },
-    normalText: {
-        fontSize: 15 * unit,
-    },
-    underLineText: {
-        fontSize: 15 * unit,
-        color: Colors.purple,
-        textDecorationLine: 'underline',
-    },
-    simpleText: {
-        fontSize: 17 * unit,
-        color: Colors.black,
-        marginBottom: 10 * unit
-    },
-    pictureSign:{
-       height:50 * unit,
-       width:50*unit
-    },
-    profileImage:{
-        height:150 * unit,
-        width:150 * unit,
-        borderRadius:75* unit,
-        borderWidth:1,
-        borderColor:Colors.purple,
-        alignSelf:'center',
-        alignItems:'center',
-        justifyContent:'center'
-
-    },
-    imgstyle:{
-        height: 147 * unit,
-        width: 147 * unit,
-        borderRadius: 73.5 * unit,
-    },
-    profileLable:{
-        textAlign:'center',
-        fontSize:13 * unit,
-        marginTop:10 * unit,
-    }
 })

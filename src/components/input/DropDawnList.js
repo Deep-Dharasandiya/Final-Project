@@ -74,11 +74,13 @@ const styles = StyleSheet.create({
         borderRadius: 25 *unit,
         marginTop: 15 * unit,
         borderColor:Colors.gray,
-        borderWidth:1
+        borderWidth:1,
+        backgroundColor:Colors.white
         
     },
     lable: {
         marginLeft: 13 * unit,
+        fontSize:13 * unit,
         color: Colors.black
     },
     downArrow: {
