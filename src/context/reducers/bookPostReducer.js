@@ -25,7 +25,6 @@ export default function bookPostReducer(state = bookPostReducerInitialState, act
             for (let i = 0; i < bookPost.length; i++) {
                 if (bookPost[i]._id == action.payload._id) {
                     bookPost[i]=action.payload;
-                    console.log("inReducer");
                     break;
                 }
             }

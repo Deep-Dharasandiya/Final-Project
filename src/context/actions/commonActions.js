@@ -1,4 +1,5 @@
 import { dispatch } from "../store/ContextStore";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { storeCommanReducer } from "../localStorage/LocalStorage"; 
 import { Local_Srorage, Comman_Actions } from "../../constant/actionType";
 
@@ -23,6 +24,13 @@ export async function setLogin(data) {
         payload:data,
     });
     storeCommanReducer();
+}
+export async function setLogout(data) {
+    await AsyncStorage.clear();
+    await dispatch.commonReducerDispatch({
+        type: Comman_Actions.SET_LOGOUT,
+        payload: data,
+    });
 }
 export async function loadingStart(data) {
     await dispatch.commonReducerDispatch({

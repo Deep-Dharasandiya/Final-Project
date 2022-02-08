@@ -25,10 +25,17 @@ import Register3 from '../screens/Register/Register3';
 import ForgotPassword1 from '../screens/forgotPassword/ForgotPassword1';
 import ForgotPassword2 from '../screens/forgotPassword/ForgotPassword2';
 import ForgotPassword3 from '../screens/forgotPassword/ForgotPassword3';
+import TermsAndCondition from '../screens/TermsAndCondition';
+import PrivacyPolicy from '../screens/PrivacyPolicy';
 
 import BottomTabNavigation from './BottomTabNavigation';
+import ProfileDetails from '../screens/AuthorizedScreen/ProfileDetails';
 import SellerChatBoard from '../screens/AuthorizedScreen/Chat/Seller/SellerChatBoard';
 import BuyerChatBoard from '../screens/AuthorizedScreen/Chat/Buyer/BuyerChatBoard';
+import SoldHistory from '../screens/AuthorizedScreen/SoldHistory';
+import SoldHistoryDetails from '../screens/AuthorizedScreen/SoldHistoryDetails';
+import PurchaseHistory from '../screens/AuthorizedScreen/PurchaseHistory';
+import PurchaseHistoryDetails from '../screens/AuthorizedScreen/PurchaseHistoryDetails';
 import { Colors } from '../constant/Colors'
 
 export default function App(props) {
@@ -86,8 +93,15 @@ function AllScreens(){
           data.commonReducerState.isLogin?
         <>
             <Stack.Screen name="BottomTabNavigation" component={BottomTabNavigation} options={{ headerShown: false }} />
+              <Stack.Screen name="ProfileDetails" component={ProfileDetails} options={{ headerShown: false }} />
               <Stack.Screen name="SellerChatBoard" component={SellerChatBoard} options={{ headerShown: false }} />
               <Stack.Screen name="BuyerChatBoard" component={BuyerChatBoard} options={{ headerShown: false }} />
+              <Stack.Screen name="TermsAndCondition" component={TermsAndCondition} options={{ headerShown: false }} />
+              <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicy} options={{ headerShown: false }} />
+              <Stack.Screen name="SoldHistory" component={SoldHistory} options={{ headerShown: false }} />
+              <Stack.Screen name="SoldHistoryDetails" component={SoldHistoryDetails} options={{ headerShown: false }} />
+              <Stack.Screen name="PurchaseHistory" component={PurchaseHistory} options={{ headerShown: false }} />
+              <Stack.Screen name="PurchaseHistoryDetails" component={PurchaseHistoryDetails} options={{ headerShown: false }} />
         </>
         :
         <>
@@ -100,6 +114,8 @@ function AllScreens(){
             <Stack.Screen name="ForgotPassword1" component={ForgotPassword1} options={{ headerShown: false }} />
             <Stack.Screen name="ForgotPassword2" component={ForgotPassword2} options={{ headerShown: false }} />
             <Stack.Screen name="ForgotPassword3" component={ForgotPassword3} options={{ headerShown: false }} />
+            <Stack.Screen name="TermsAndCondition" component={TermsAndCondition} options={{ headerShown: false }} />
+            <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicy} options={{ headerShown: false }} />
         </>
     }
       </Stack.Navigator>

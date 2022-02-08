@@ -5,7 +5,7 @@ export const commonReducerInitialState={
     isAleart:false,
     aleartMessage:'wdfef',
     isToast:false,
-    toastMessage:'dcjbdfbidfv jbujgfuni',
+    toastMessage:'',
     fcmToken:'',
     userDetails:{},
 }
@@ -28,9 +28,16 @@ export default function commonReducer(state = commonReducerState, action) {
        case Comman_Actions.SET_LOGIN:
            return {
                ...state,
-               isLogin: true,
                userDetails:action.payload,
+               isLogin: true,
         }
+       case Comman_Actions.SET_LOGOUT:
+           return {
+               ...state,
+               userDetails:[],
+               isLogin: false,
+               fcmToken:''
+           }
        case Comman_Actions.LOADIND_START:
            return {
                ...state,

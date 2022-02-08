@@ -19,7 +19,6 @@ export default function ForgotPassword1(props) {
         if (contactNumber != ''){
             if (isPhoneNumber(contactNumber)) {
                 const response = await checkMobileNumberRegister({ contactNumber:  "+91" + contactNumber });
-                console.log(response);
                 if (response && response.isRegister) {
                     props.navigation.navigate('ForgotPassword2', { contactNumber: "+91" + contactNumber })
                 } else {

@@ -12,7 +12,6 @@ export function isEmail(val) {
     return isValid;
   }
 export function isPhoneNumber(val) {
-  console.log(val);
   let isValid = true;
   const regex = /^\d+$/
   const length = val.length;
@@ -34,7 +33,6 @@ export function isPhoneNumber(val) {
     return isValid;
   }
   export function isValidPin(val) {
-    console.log(val);
     let isValid = true;
     const regex = /^\d+$/
     const length = val.length;

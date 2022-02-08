@@ -37,6 +37,14 @@ export const Buyer_Book_Actions = {
     DELETE_BUYER_BOOK: 'DELETE_BUYER_BOOK',
     CLEAR_BOOK: 'CLEAR_BOOK',
 }
+
+export const Chats_Actions={
+    ADD_NEW_CHAT:"ADD_NEW_CHAT",
+    ADD_CHAT:"ADD_CHAT",
+    DELETE_CHAT:'DELETE_CHAT',
+    REPLACE_CHAT:'REPLACE_CHAT',
+    CLEAR_CHATS:'CLEAR_CHATS',
+}
 export const Network_Services={
     CHECK_MOBILE_NUMBER_REGISTER:"ContactNumberCheck",
     REGISTER_USER:"InsertUserDetails",
@@ -54,6 +62,10 @@ export const Network_Services={
     ADD_DELIVERE_FLAG:'AddDeliverdFlag',
     ADD_RECEIVED_FLAG:'AddReceivedFlag',
     DELETE_BOOK:'DeleteBook',
-    DELETE_REQUST:'DeleteRequest'
+    DELETE_REQUST:'DeleteRequest',
+    GET_CHAT:'GetChats',
+    INSERT_CHAT:'InsertChat',
+    SOLD_HISTORY:'GetSoldBook',
+    PURCHASE_HISTORY:'GetPurchaseBook'
 
 }

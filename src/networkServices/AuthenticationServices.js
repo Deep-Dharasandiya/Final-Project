@@ -84,6 +84,22 @@ export function DeleteRequest(body) {
     const response = postMethod(body, Network_Services.DELETE_REQUST)
     return response;
 }
+export function InsertChat(body) {
+    const response = postMethod(body, Network_Services.INSERT_CHAT)
+    return response;
+}
+export function GetChat(body) {
+    const response = postMethod(body, Network_Services.GET_CHAT)
+    return response;
+}
+export function GetSoldHistory(body) {
+    const response = postMethod(body, Network_Services.SOLD_HISTORY)
+    return response;
+}
+export function GetPurchaseHistoryt(body) {
+    const response = postMethod(body, Network_Services.PURCHASE_HISTORY)
+    return response;
+}
 
 function timeOut(){
     setTimeout(() => {

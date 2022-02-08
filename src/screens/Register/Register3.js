@@ -85,10 +85,10 @@ export default function Register3(props) {
         setIsTearms(!isTerms);
     }
     function onTerms() {
-
+        props.navigation.navigate('TermsAndCondition')
     }
     function onPolicy() {
-
+        props.navigation.navigate('PrivacyPolicy')
     }
     const highlightTerms = string =>
         <Text

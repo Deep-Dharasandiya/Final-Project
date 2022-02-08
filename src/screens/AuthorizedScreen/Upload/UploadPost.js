@@ -125,7 +125,6 @@ export default function UoloadPost(props) {
                         setCondition('');
                         setFirebaseUri('');
                         setCoverUri('');
-                       // console.log(response.data);
                         addNewUserBook(response.data)
                         props.navigation.navigate('Uploaded Books');
                        

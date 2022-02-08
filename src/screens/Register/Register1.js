@@ -21,7 +21,6 @@ export default function Register1(props) {
         if (contactNumber != '') {
             if (isPhoneNumber(contactNumber)) {
                 const response = await checkMobileNumberRegister({ contactNumber: "+91" + contactNumber});
-                console.log(response);
                 if(response){
                     if (!response.isRegister) {
                         props.navigation.navigate('Register2', { contactNumber: "+91" + contactNumber });

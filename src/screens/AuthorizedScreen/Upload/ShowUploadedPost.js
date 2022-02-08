@@ -20,7 +20,6 @@ export default function ShowUploadedPost(props) {
         setIsLoading(true);
         let date;
         const dataLength = contextData.userBookReducerState.userBookData.length;
-        console.log(dataLength)
         if (dataLength != 0 && !initial) {
             date = contextData.userBookReducerState.userBookData[dataLength - 1].date;
         } else {
@@ -35,7 +34,6 @@ export default function ShowUploadedPost(props) {
             if (initial) {
                 clearUserBook();
             }
-            console.log(response);
             addUserBook(response);
            // setBooksData(booksData.concat(response));
         }

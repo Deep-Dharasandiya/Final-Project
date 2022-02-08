@@ -11,7 +11,7 @@ import UploadNavigation from "./UploadNavigation";
 import ChatNavigation from "./ChatNavigation";
 import Drawer from './Drawer';
 
-export default function BottomTabNavigation() {
+export default function BottomTabNavigation(props) {
   React.useEffect(() => {
    // StatusBar.setBarStyle('dark-content', true);
     SplashScreen.hide();
@@ -32,7 +32,7 @@ export default function BottomTabNavigation() {
 }
 
 
-function MyTabBar({state, descriptors, navigation}) {
+function MyTabBar({state, descriptors, navigation,props}) {
   return (
     <View style={{backgroundColor:Colors.blurPurple}}>
     <View style={styles.tabBar}>
@@ -66,6 +66,7 @@ function MyTabBar({state, descriptors, navigation}) {
           });
 
           if (!isFocused && !event.defaultPrevented) {
+           // navigation.dispatch(DrawerActions.closeDrawer());
             navigation.navigate(route.name);
           }
         };

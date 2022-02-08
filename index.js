@@ -10,6 +10,7 @@ import { addNewBookPost, deleteBookPost, updateBookPost } from './src/context/ac
 import { addNewUserBook, deleteUserBook } from './src/context/actions/userBookAction';
 import { state } from './src/context/store/ContextStore'
 import { addBuyerNewBook, deleteBuyerBook } from './src/context/actions/buyerBookActions';
+import { addNewChat } from './src/context/actions/chatActions';
 
 LogBox.ignoreLogs([
     "[react-native-gesture-handler] Seems like you\'re using an old API with gesture components, check out new Gestures system!",
@@ -59,6 +60,14 @@ export async function handleNotificationData(remoteData) {
             }
         }
         updateBookPost(data.updateBook);
+    }
+    else if (data.type == 'BOOK_SOLD') {
+        deleteUserBook(data.updateBook._id);
+        deleteBuyerBook(data.updateBook._id);
+        deleteBookPost(data.updatedBook._id);
+    }
+    else if (data.type == 'Insert_Chat') {
+        addNewChat(data.chat);
     }
 
 }

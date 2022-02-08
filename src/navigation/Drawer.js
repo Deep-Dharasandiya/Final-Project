@@ -11,6 +11,12 @@ import PostDetails from '../screens/AuthorizedScreen/Home/PostDetails';
 import HomeNavigation from './HomeNavigation';
 import { rootContext } from '../context/store/ContextStore';
 import CommonStyles from '../screens/CommonStyles';
+import { logout } from '../networkServices/AuthenticationServices';
+import { setLogout } from '../context/actions/commonActions';
+import { clearBookPost } from '../context/actions/bookPostActions';
+import { clearBuyerBook } from '../context/actions/buyerBookActions';
+import { clearUserBook } from '../context/actions/userBookAction'
+import { clearChats } from '../context/actions/chatActions';
 
 export default function Drawer(props) {
    
@@ -49,9 +55,21 @@ export default function Drawer(props) {
 function CustomDrawer(props) {
     const data = React.useContext(rootContext);
     const currentUserID = data.commonReducerState.userDetails._id;
-    function onLogout() {
-        //props.navigation.popToTop();
-       // dispatch(setLogout());
+    async function onLogout() {
+        const body={
+            id: currentUserID
+        }
+        const response = await logout(body);
+        console.log(response);
+        if (response) {
+            if (response.isLogout) {
+                setLogout();
+                clearBookPost();
+                clearBuyerBook();
+                clearUserBook();
+                clearChats();
+            }
+        }
     }
     // <DrawerItemList {...props} />
     return (
@@ -70,6 +88,7 @@ function CustomDrawer(props) {
                         </View>
                     </View>
                     <TouchableOpacity
+                        onPress={() => onLogout()}
                     >
                         <Image
                             style={{ height: 25 * unit, width: 25 * unit, marginRight: 20 * unit }}
@@ -83,17 +102,21 @@ function CustomDrawer(props) {
                 {...props}
             >
               
-                <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', height: 50 * unit, paddingHorizontal: 10 * unit }}>
+                <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', height: 50 * unit, paddingHorizontal: 10 * unit }}
+                    onPress={() => props.navigation.navigate("ProfileDetails")}
+                >
                     <Image
                         style={{ ...CommonStyles.icon1Style, marginRight: 10 * unit }}
                         resizeMode="contain"
                         source={require('../assets/backPurple/back.png')}
                     />
                     <Text style={{...CommonStyles.font2Black,fontWeight:'300'}}>
-                        Manage Account
+                        View Account
                     </Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', height: 50 * unit, paddingHorizontal: 10 * unit }}>
+                <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', height: 50 * unit, paddingHorizontal: 10 * unit }}
+                    onPress={() => props.navigation.navigate("PurchaseHistory")}
+                >
                     <Image
                         style={{ ...CommonStyles.icon1Style, marginRight: 10 * unit }}
                         resizeMode="contain"
@@ -103,7 +126,9 @@ function CustomDrawer(props) {
                         Purchases
                     </Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', height: 50 * unit, paddingHorizontal: 10 * unit }}>
+                <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', height: 50 * unit, paddingHorizontal: 10 * unit }}
+                    onPress={() => props.navigation.navigate("SoldHistory")}
+                >
                     <Image
                         style={{ ...CommonStyles.icon1Style, marginRight: 10 * unit }}
                         resizeMode="contain"
@@ -113,7 +138,7 @@ function CustomDrawer(props) {
                         Sold Books
                     </Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', height: 50 * unit, paddingHorizontal: 10 * unit }}>
+                {/* <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', height: 50 * unit, paddingHorizontal: 10 * unit }}>
                     <Image
                         style={{ ...CommonStyles.icon1Style, marginRight: 10 * unit }}
                         resizeMode="contain"
@@ -122,8 +147,10 @@ function CustomDrawer(props) {
                     <Text style={{ ...CommonStyles.font2Black, fontWeight: '300' }}>
                         Feedback
                     </Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', height: 50 * unit, paddingHorizontal: 10 * unit }}>
+                </TouchableOpacity> */}
+                <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', height: 50 * unit, paddingHorizontal: 10 * unit }}
+                    onPress={() => props.navigation.navigate('PrivacyPolicy')}
+                >
                     <Image
                         style={{ ...CommonStyles.icon1Style, marginRight: 10 * unit }}
                         resizeMode="contain"
@@ -133,7 +160,9 @@ function CustomDrawer(props) {
                        Privacy Policy
                     </Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', height: 50 * unit, paddingHorizontal: 10 * unit }}>
+                <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', height: 50 * unit, paddingHorizontal: 10 * unit }} 
+                    onPress={() => props.navigation.navigate('TermsAndCondition')}
+                >
                     <Image
                         style={{ ...CommonStyles.icon1Style, marginRight: 10 * unit }}
                         resizeMode="contain"

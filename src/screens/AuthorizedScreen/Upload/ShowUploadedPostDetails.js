@@ -150,7 +150,6 @@ export default function ShowUploadedPostDetails(props) {
                     }
                     const response = await updateUploadedBook(body);
                     if (response && response.isUpdate) {
-                        console.log(response);
                         let userdata = data.userBookReducerState.userBookData;
                         for (i = 0; i < data.userBookReducerState.userBookData.length;i++){
                             if (userdata[i]._id == props.route.params.item._id){

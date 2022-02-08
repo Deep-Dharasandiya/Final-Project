@@ -30,7 +30,6 @@ export default function BuyerBookDetails(props) {
         }
         
         const response = await DeleteRequest(body);
-        console.log("response ",response);
         if (response && response.isDelete) {
             deleteBuyerBook(response.data._id)
             props.navigation.pop();

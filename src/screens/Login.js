@@ -62,10 +62,10 @@ export default function Login(props) {
         props.navigation.navigate("ForgotPassword1");
     }
     function onTerms(){
-       
+        props.navigation.navigate('TermsAndCondition')
     }
     function onPolicy(){
-
+        props.navigation.navigate('PrivacyPolicy')
     }
     async function onLogin() {
         if (contactNumber != '' && password != '') {
@@ -80,7 +80,7 @@ export default function Login(props) {
                         const response = await login(body);
                         if (response && response.isLogin) {
                             setLogin(response.data);
-                            props.navigation.navigate('BottomTabNavigation');
+                            //props.navigation.navigate('BottomTabNavigation');
                         } else {
                             if (response) {
                                 aleartOn("Please enter correct credential");

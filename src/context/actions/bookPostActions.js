@@ -24,7 +24,6 @@ export function addNewBookPost(data) {
     storeBookPost();
 }
 export function deleteBookPost(data) {
-    console.log("in recuser ", data)
     dispatch.bookPostReducerDispatch({
         type: BookPost_Actions.DELETE_BOOK_POST,
         payload: data,

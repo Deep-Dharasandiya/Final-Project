@@ -19,7 +19,6 @@ export default function PostDetails(props) {
     const currentUserID = data.commonReducerState.userDetails._id;
     const temp = data.bookPostReducerState.bookPostData.filter((item) => item._id == props.route.params.item._id)[0]
     if (temp!=bookDetails){
-        console.log(temp);
         if (temp) {
             setBookDetails(temp);
         }

@@ -1,5 +1,6 @@
 import React from 'react'
 import { StyleSheet, Text, TouchableOpacity, View ,Image,TextInput,FlatList,ActivityIndicator} from 'react-native'
+import { useFocusEffect } from '@react-navigation/native';
 //styles
 import CommonStyles from '../../CommonStyles'
 //utils
@@ -20,12 +21,18 @@ export default function PostList(props) {
     const [isCollegeOnly,setIsCollegeOnly]=React.useState(false)
     const contextData = React.useContext(rootContext);
     const currentUserID = contextData.commonReducerState.userDetails._id;
+    useFocusEffect(
+        React.useCallback(() => {
+            return () => {
+                props.navigation.closeDrawer()
+            };
+        }, [])
+    );
     React.useEffect(() => {
        if( contextData.bookPostReducerState.bookPostData.length==0){
            fetchBooksData(true);
        }
-       
-    },[]);
+    }, [props.navigation]);
     let filterData = [ {
         value: 'College',
     }];
@@ -61,7 +68,6 @@ export default function PostList(props) {
             date: date,
         }
         const response = await fetchAllBook(body);
-        console.log(response)
         if (response) {
             if(initial){
                 clearBookPost();

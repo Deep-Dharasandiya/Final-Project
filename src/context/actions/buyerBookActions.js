@@ -14,7 +14,6 @@ export function addBuyerBook(data) {
         type: Buyer_Book_Actions.ADD_BUYER_BOOK,
         payload: data,
     });
-    
 }
 export function addBuyerNewBook(data) {
     dispatch.buyerBookReducerDispatch({

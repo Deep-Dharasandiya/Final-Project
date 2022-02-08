@@ -1,6 +1,5 @@
 import React from 'react'
-import { StyleSheet, Text, View, Image, TouchableOpacity ,KeyboardAvoidingView } from 'react-native'
-import { ScrollView, TextInput } from 'react-native-gesture-handler'
+import { StyleSheet, Text, View, Image, TouchableOpacity, FlatList, ActivityIndicator, TextInput} from 'react-native'
 //style
 import CommonStyles from '../../../CommonStyles'
 //utils
@@ -10,9 +9,10 @@ import { unit,width,height } from '../../../../constant/ScreenDetails'
 import { updateBookPost } from '../../../../context/actions/bookPostActions'
 import { addBuyerNewBook, deleteBuyerBook } from '../../../../context/actions/buyerBookActions'
 import { addNewUserBook, deleteUserBook } from '../../../../context/actions/userBookAction'
-import { addDeliveredFlag, addSellerConfirmation } from '../../../../networkServices/AuthenticationServices'
+import { addDeliveredFlag, addSellerConfirmation, GetChat, InsertChat } from '../../../../networkServices/AuthenticationServices'
 import { rootContext } from '../../../../context/store/ContextStore'
 import ConfirmationAleart from '../../../../components/confirmationAleart';
+import { addChat, addNewChat } from '../../../../context/actions/chatActions'
 export default function SellerChatBoard(props) {
   const [message,setMessage]=React.useState('');
     const [bookDetails, setBookDetails] = React.useState(props.route.params.bookDetails);
@@ -20,6 +20,9 @@ export default function SellerChatBoard(props) {
     const [confirmationDealTrue, setConfirmationDealTrue] = React.useState(false);
     const [confirmationDealFalse, setConfirmationDealFalse] = React.useState(false);
     const [confirmationRecieved, setConfirmationRecieved] = React.useState(false);
+    const [isNextSearch, setIsNextSearch] = React.useState(true);
+    const [insertLoading, setInsertLoading] = React.useState(false);
+    const [isLoading, setIsLoading] = React.useState(false);
     const data = React.useContext(rootContext);
     const currentUserID = data.commonReducerState.userDetails._id;
     const temp = data.buyerBookReducerState.buyerBookData.filter((item) => item._id == props.route.params.item._id)[0]
@@ -30,10 +33,71 @@ export default function SellerChatBoard(props) {
         }
     }
     React.useEffect(() => {
+        if (data.chatReducerState.chatData.filter((item) => item.bookID == bookDetails._id && (item.senderID == currentUserID || item.senderID == request.userID._id) && (item.receiverID == currentUserID || item.receiverID == request.userID._id)).length==0) {
+            fetchChatsData(true);
+        }
     }, []);
 
     function onChangeMessage(text){
         setMessage(text);
+    }
+    async function fetchChatsData(initial) {
+        setIsLoading(true);
+        let date;
+        const chatdata = data.chatReducerState.chatData.filter((item) => item.bookID == bookDetails._id && (item.senderID == currentUserID || item.senderID == request.userID._id) && (item.receiverID == currentUserID || item.receiverID == request.userID._id));
+        console.log(chatdata);
+        if (chatdata.length != 0 && !initial) {
+            date = chatdata[chatdata.length - 1].date;
+            console.log("in ", chatdata)
+        } else {
+            date = "current";
+        }
+        console.log(date);
+        const body = {
+            userID1: currentUserID,
+            userID2: request.userID._id,
+            bookID: bookDetails._id,
+            date: date,
+        }
+        console.log(body);
+        const response = await GetChat(body);
+        if (response) {
+            if (response.length != 0 && response.length % 20 == 0) {
+                setIsNextSearch(true);
+            } else {
+                setIsNextSearch(false)
+            }
+            if (initial) {
+                //clearBookPost();
+            }
+            addChat(response);
+            //setBooksData(booksData.concat(response));
+        }
+        setIsLoading(false);
+    }
+    function onEndScroll() {
+        if (isNextSearch) {
+            fetchChatsData(false);
+        }
+    }
+    async function chatSend() {
+        if (message != '') {
+            setInsertLoading(true);
+            const body = {
+                bookID: bookDetails._id,
+                senderID: currentUserID,
+                receiverID: request.userID._id,
+                message: message
+            }
+            const response = await InsertChat(body);
+            console.log(response);
+            if (response && response.isAdd) {
+                addNewChat(response.data);
+                console.log("hi")
+                setMessage('');
+                setInsertLoading(false);
+            }
+        }
     }
    async function onConfirmation(flag){
        const body = {
@@ -41,13 +105,12 @@ export default function SellerChatBoard(props) {
            userID: request.userID._id,
            isConfirm:flag,
        }
-       console.log("body",body)
        const response=await addSellerConfirmation(body);
-       console.log("confirmation",response);
        if (response && response.isAdd){
            deleteUserBook(response.data._id);
            addNewUserBook(response.data);
            updateBookPost(response.data);
+           props.navigation.pop();
            props.navigation.pop();
        }
 
@@ -57,13 +120,12 @@ export default function SellerChatBoard(props) {
             bookID: bookDetails._id,
             userID: request.userID._id
         }
-        console.log("body", body)
         const response = await addDeliveredFlag(body);
-        console.log("confirmation", response);
         if (response && response.isAdd) {
             deleteUserBook(response.data._id);
             addNewUserBook(response.data);
             updateBookPost(response.data);
+            props.navigation.pop();
             props.navigation.pop();
         }
     }
@@ -170,21 +232,39 @@ export default function SellerChatBoard(props) {
             
 
             </View>
-            <ScrollView
-                style={{ flex: 1, marginVertical: 10 * unit }}
-            >
-                <View style={styles.messageContainer}>
-                    <View style={styles.messageBody}>
-                        <Text style={CommonStyles.font1White}>Hello, How are you</Text>
-                    </View>
-                </View>
-                <View style={{ ...styles.messageContainer, alignSelf: 'flex-start' }}>
-                    <View style={{ ...styles.messageBody, backgroundColor: Colors.blurPurple, alignSelf: 'flex-start' }}>
-                        <Text tyle={CommonStyles.font1White}>Hello ,I am fine </Text>
+            <FlatList
+                inverted
+                key={1}
+                data={data.chatReducerState.chatData.filter((item) => item.bookID == bookDetails._id && (item.senderID == currentUserID || item.senderID == request.userID._id) && (item.receiverID == currentUserID || item.receiverID == request.userID._id))}
+                listMode="SCROLLVIEW"
+                onEndReached={() => onEndScroll()}
+                keyExtractor={(item, index) => `key-${index}`}
+                ListFooterComponent={isLoading && (<ActivityIndicator />)}
+                ListFooterComponentStyle={{
+                    marginVertical: 10 * unit,
+                    width: '100%',
+                    bottom: 0
+                }}
+                renderItem={({ item, index }) => {
+                    return <View>
+                        {
+                            item.senderID == currentUserID ?
+                                <View style={styles.messageContainer}>
+                                    <View style={styles.messageBody}>
+                                        <Text style={CommonStyles.font1White}>{item.message}</Text>
+                                    </View>
+                                </View>
+                                :
+                                <View style={{ ...styles.messageContainer, alignSelf: 'flex-start' }}>
+                                    <View style={{ ...styles.messageBody, backgroundColor: Colors.blurPurple, alignSelf: 'flex-start' }}>
+                                        <Text tyle={CommonStyles.font1White}>{item.message}</Text>
 
+                                    </View>
+                                </View>
+                        }
                     </View>
-                </View>
-            </ScrollView>
+                }}
+            />
             <View style={styles.bottomView}>
                 <View style={styles.textInputView}>
                     {/* <Image
@@ -202,119 +282,25 @@ export default function SellerChatBoard(props) {
                     />
                 </View>
 
-                <View style={styles.sentButton}>
-                    <Image
-                        style={CommonStyles.icon1Style}
-                        resizeMode="contain"
-                        source={require('../../../../assets/send/send.png')}
-                    />
-                </View>
-            </View>
-        </View>
-   /* <View style={styles.container}>
-          
-    <View style={styles.appBar}>
-        <View style={styles.appBarBody}>
-            <View style={{ flexDirection: 'row', alignItems:'center', justifyContent:'center' ,marginTop:30* unit}}>
-                <TouchableOpacity
-                    style={{ marginLeft: 10 * unit }}
-                    onPress={() => props.navigation.pop()}
-                >
-                    <Image
-                        style={{ height: 23 * unit, width: 23 * unit }}
-                        resizeMode="contain"
-                        source={require('../../../../assets/backPurple/back.png')}
-                    />
-                </TouchableOpacity>
-                    <Image
-                        style={{ height: 40 * unit, width: 40 * unit ,borderRadius:20*unit,marginLeft:5* unit}}
-                        // resizeMode="contain"
-                        source={{ uri: props.route.params.item.userID.profileURL}}
-                    />
-                    <Text style={styles.appBarTitle}>{props.route.params.item.userID.firstName + " " + props.route.params.item.userID.lastName}</Text>
-            </View>
                 {
-                    !props.route.params.item.sellerConformation ?
-                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: width }}>
-                            <View style={{ width: width * 0.6, paddingHorizontal: 10 * unit, paddingVertical: 5 * unit }}>
-                                <Text>You can send confirmation here. </Text>
-                            </View>
-                            <TouchableOpacity style={{ height: 50 * unit, width: width * 0.35, backgroundColor: Colors.purple, marginRight: 10 * unit, marginBottom: 5 * unit, borderRadius: 10 * unit, alignItems: 'center', justifyContent: 'center' }}
-                                onPress={() => onConfirmation()}
-                            >
-                                <Text style={{ color: Colors.white, fontSize: 18 * unit }}>Confirm</Text>
-                            </TouchableOpacity>
+                    insertLoading ?
+                        <View style={styles.sentButton} >
+                            <ActivityIndicator />
                         </View>
                         :
-                          !props.route.params.item.buyerConformation?
-                        <View style={{ width: width * 0.6, paddingHorizontal: 10 * unit, paddingVertical: 5 * unit }}>
-                            <Text>confirmation sent waiting for buyer response </Text>
-                        </View>
-                        :
-                        !props.route.params.item.deliverd?
-                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: width }}>
-                            <View style={{ width: width * 0.6, paddingHorizontal: 10 * unit, paddingVertical: 5 * unit }}>
-                                <Text>confirm by the buyer add dilivery </Text>
-                            </View>
-                            <TouchableOpacity style={{ height: 50 * unit, width: width * 0.35, backgroundColor: Colors.purple, marginRight: 10 * unit, marginBottom: 5 * unit, borderRadius: 10 * unit, alignItems: 'center', justifyContent: 'center' }}
-                                 onPress={() => onDeliverd()}
-                            >
-                                <Text style={{ color: Colors.white, fontSize: 18 * unit }}>Delivered</Text>
-                            </TouchableOpacity>
-                        </View>
-                        :
-                            <View style={{ width: width * 0.6, paddingHorizontal: 10 * unit, paddingVertical: 5 * unit }}>
-                                <Text>waiting for buyer received </Text>
-                            </View>
+                        <TouchableOpacity style={styles.sentButton}
+                            onPress={() => chatSend()}
+                        >
+                            <Image
+                                style={CommonStyles.icon1Style}
+                                resizeMode="contain"
+                                source={require('../../../../assets/send/send.png')}
+                            />
+                        </TouchableOpacity>
+
                 }
-            
-        </View>
-            </View>
-        
-        <ScrollView
-         style={{flex:1,marginBottom:10* unit}}
-        >
-                <View style={{ width: width * 0.8, alignSelf: 'flex-end', marginRight: 10 * unit }}>
-                    <View style={{ alignSelf: 'flex-end', padding: 10 * unit, borderRadius: 10 * unit, backgroundColor: Colors.purple, marginVertical: 5 * unit }}>
-                        <Text style={{ color: Colors.white }}>Hello How are you</Text>
-
-                    </View>
-                </View>
-            <View style={{ width: width * 0.8, alignSelf: 'flex-start', marginLeft: 10 * unit }}>
-                <View style={{ alignSelf: 'flex-start', padding: 10 * unit, borderRadius: 10 * unit, backgroundColor: Colors.blurPurple, marginVertical: 5 * unit }}>
-                    <Text>Hello How are you rfnug tiohh hijhyj khihh jij rjijg tjhiohjth thijh fnbfgnb fnfbfgb gbnbgb fgkng tiknhth hikynhyh thihhnh thith</Text>
-
-                </View>
-            </View>
-            </ScrollView>
-       
-        <View style={styles.bottomView}>
-            <View style={styles.textInputView}>
-                    <Image
-                        style={{ height: 23 * unit, width: 23 * unit ,marginHorizontal:10* unit}}
-                        resizeMode="contain"
-                        source={require('../../../../assets/backPurple/back.png')}
-                    />
-                <TextInput
-                    style={styles.textInput}
-                    placeholder='Message:'
-                    placeholderTextColor={Colors.gray}
-                    multiline={true}
-                    onChangeText={(text) => onChangeMessage(text)}
-                    defaultValue={message}
-                />
-            </View>
-          
-                <View style={styles.sentButton}>
-                    <Image
-                        style={{ height: 22 * unit, width: 22 * unit }}
-                        resizeMode="contain"
-                        source={require('../../../../assets/back/back.png')}
-                    />
             </View>
         </View>
-        
-   </View>*/
     )
 }
 

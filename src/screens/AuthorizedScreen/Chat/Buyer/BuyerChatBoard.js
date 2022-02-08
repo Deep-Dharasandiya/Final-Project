@@ -1,32 +1,97 @@
 import React from 'react'
-import { StyleSheet, Text, View,Image,TouchableOpacity,ScrollView,TextInput } from 'react-native'
+import { StyleSheet, Text, View,Image,TouchableOpacity,ScrollView,TextInput,FlatList,ActivityIndicator } from 'react-native'
 //styles
 import CommonStyles from '../../../CommonStyles'
 //utils
 import Colors from '../../../../constant/Colors'
 import { unit,width } from '../../../../constant/ScreenDetails'
 import { rootContext } from '../../../../context/store/ContextStore'
-import { addBuyerConfirmation, addReceivedFlag } from '../../../../networkServices/AuthenticationServices'
+import { addBuyerConfirmation, addReceivedFlag, GetChat, InsertChat } from '../../../../networkServices/AuthenticationServices'
 import { addBuyerNewBook, deleteBuyerBook } from '../../../../context/actions/buyerBookActions'
-import { updateBookPost } from '../../../../context/actions/bookPostActions'
+import { deleteBookPost, updateBookPost } from '../../../../context/actions/bookPostActions'
 import ConfirmationAleart from '../../../../components/confirmationAleart';
+import { addChat, addNewChat, deleteChat, replaceChat } from '../../../../context/actions/chatActions'
 export default function BuyerChatBoard(props){
     const currentUserID = React.useContext(rootContext).commonReducerState.userDetails._id;
     const [message, setMessage] = React.useState('');
     const [bookDetails, setBookDetails] = React.useState(props.route.params.item);
     const data = React.useContext(rootContext);
     const temp = data.buyerBookReducerState.buyerBookData.filter((item) => item._id == props.route.params.item._id)[0]
+    const [isLoading, setIsLoading] = React.useState(false);
     const [confirmationDealTrue, setConfirmationDealTrue] = React.useState(false);
     const [confirmationDealFalse, setConfirmationDealFalse] = React.useState(false);
     const [confirmationRecievedTrue, setConfirmationRecievedTrue] = React.useState(false);
     const [confirmationRecievedFalse, setConfirmationRecievedFalse] = React.useState(false);
+    const [isNextSearch,setIsNextSearch]= React.useState(true);
+    const [insertLoading,setInsertLoading]=React.useState(false);
     if (temp != bookDetails) {
         if (temp) {
             setBookDetails(temp);
         }
     }
+    React.useEffect(() => {
+        if (data.chatReducerState.chatData.filter((item) => item.bookID == bookDetails._id && (item.senderID == currentUserID || item.senderID == bookDetails.userID._id) && (item.receiverID == currentUserID || item.receiverID == bookDetails.userID._id)).length == 0) {
+            fetchChatsData(true);
+        }
+    }, []);
     function onChangeMessage(text) {
         setMessage(text);
+    }
+    async function fetchChatsData(initial) {
+        setIsLoading(true);
+        let date;
+        const chatdata = data.chatReducerState.chatData.filter((item) => item.bookID == bookDetails._id && (item.senderID == currentUserID || item.senderID == bookDetails.userID._id) && (item.receiverID == currentUserID || item.receiverID == bookDetails.userID._id));
+       console.log(chatdata);
+        if (chatdata.length != 0 && !initial) {
+            date = chatdata[chatdata.length - 1].date;
+            console.log("in ", chatdata)
+        } else {
+            date = "current";
+        }
+        console.log(date);
+        const body = {
+            userID1: currentUserID,
+            userID2: bookDetails.userID._id,
+            bookID: bookDetails._id,
+            date: date,
+        }
+        console.log(body);
+        const response = await GetChat(body);
+        if (response) {
+            if(response.length !=0 && response.length%20==0){
+                setIsNextSearch(true);
+            }else{
+                setIsNextSearch(false)
+            }
+            if (initial) {
+                //clearBookPost();
+            }
+            addChat(response);
+            //setBooksData(booksData.concat(response));
+        }
+        setIsLoading(false);
+    }
+    function onEndScroll() {
+        if(isNextSearch){
+            fetchChatsData(false);
+        }
+    }
+    async function insertChat(){
+        if(message !=''){
+            setInsertLoading(true);
+            const body = {
+                bookID: bookDetails._id,
+                senderID: currentUserID,
+                receiverID: bookDetails.userID._id,
+                message: message
+            }
+            const response = await InsertChat(body);
+            if (response && response.isAdd) {
+                addNewChat(response.data);
+                setMessage('');
+                setInsertLoading(false);
+            }
+        }
     }
     async function onConfirmation(flag) {
         const body = {
@@ -34,9 +99,7 @@ export default function BuyerChatBoard(props){
             userID: currentUserID,
             isConfirm: flag
         }
-        console.log("body", body)
         const response = await addBuyerConfirmation(body);
-        console.log("confirmation", response);
         if (response && response.isAdd) {
             deleteBuyerBook(response.data._id)
             addBuyerNewBook(response.data);
@@ -49,14 +112,18 @@ export default function BuyerChatBoard(props){
             userID: currentUserID,
             isConfirm: flag
         }
-        console.log("body", body)
         const response = await addReceivedFlag(body);
-        console.log("confirmation", response);
         if (response && response.isAdd) {
-            deleteBuyerBook(response.data._id);
-            updateBookPost(response.data);
-            addBuyerNewBook(response.data);
+            if (response.isSold){
+                deleteBuyerBook(response.data._id);
+                deleteBookPost(response.data._id);
+                props.navigation.replace("PurchaseHistory");
+            }else{
+                deleteBuyerBook(response.data._id);
+                updateBookPost(response.data);
+                addBuyerNewBook(response.data);
 
+            }
         }
     }
     function handleConfirmationDealTrue(flag) {
@@ -169,21 +236,39 @@ export default function BuyerChatBoard(props){
                 }
                 
             </View>
-          <ScrollView
-              style={{ flex: 1, marginBottom: 10 * unit }}
-          >
-              <View style={styles.messageContainer}>
-                  <View style={styles.messageBody}>
-                      <Text style={CommonStyles.font1White}>Hello, How are you</Text>
-                  </View>
-              </View>
-              <View style={{...styles.messageContainer,alignSelf:'flex-start'}}>
-                  <View style={{...styles.messageBody,backgroundColor:Colors.blurPurple,alignSelf:'flex-start'}}>
-                      <Text tyle={CommonStyles.font1White}>Hello ,I am fine </Text>
+          <FlatList
+              inverted
+              key={1}
+              data={data.chatReducerState.chatData.filter((item) => item.bookID == bookDetails._id && (item.senderID == currentUserID || item.senderID == bookDetails.userID._id) && (item.receiverID == currentUserID || item.receiverID == bookDetails.userID._id))}
+              listMode="SCROLLVIEW"
+              onEndReached={() => onEndScroll()}
+              keyExtractor={(item, index) => `key-${index}`}
+              ListFooterComponent={isLoading && (<ActivityIndicator />)}
+              ListFooterComponentStyle={{
+                  marginVertical: 10 * unit,
+                  width: '100%',
+                  bottom: 0
+              }}
+              renderItem={({ item, index }) => {
+                  return <View>
+                      {
+                          item.senderID==currentUserID?
+                              <View style={styles.messageContainer}>
+                                  <View style={styles.messageBody}>
+                                      <Text style={CommonStyles.font1White}>{item.message}</Text>
+                                  </View>
+                              </View>
+                              :
+                              <View style={{ ...styles.messageContainer, alignSelf: 'flex-start' }}>
+                                  <View style={{ ...styles.messageBody, backgroundColor: Colors.blurPurple, alignSelf: 'flex-start' }}>
+                                      <Text tyle={CommonStyles.font1White}>{item.message}</Text>
 
+                                  </View>
+                              </View>
+                      }
                   </View>
-              </View>
-          </ScrollView>
+              }}
+          />
           <View style={styles.bottomView}>
               <View style={styles.textInputView}>
                   {/* <Image
@@ -200,14 +285,23 @@ export default function BuyerChatBoard(props){
                       defaultValue={message}
                   />
               </View>
+              {
+                  insertLoading ?
+                      <View style={styles.sentButton} >
+                          <ActivityIndicator/>
+                      </View>
+                    :
+                      <TouchableOpacity style={styles.sentButton}
+                          onPress={() => insertChat()}
+                      >
+                          <Image
+                              style={CommonStyles.icon1Style}
+                              resizeMode="contain"
+                              source={require('../../../../assets/send/send.png')}
+                          />
+                      </TouchableOpacity>
 
-              <View style={styles.sentButton}>
-                  <Image
-                      style={CommonStyles.icon1Style}
-                      resizeMode="contain"
-                      source={require('../../../../assets/send/send.png')}
-                  />
-              </View>
+              }
           </View>
         </View>
     )

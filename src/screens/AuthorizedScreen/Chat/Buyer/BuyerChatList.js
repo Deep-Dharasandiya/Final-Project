@@ -12,7 +12,7 @@ export default function BuyerChatList(props) {
     const [search, setSearch] = React.useState('');
     const [isLoading, setIsLoading] = React.useState(false);
     const contextData = React.useContext(rootContext);
-    const currentUserID = contextData.commonReducerState.userDetails._id;
+   // const currentUserID = contextData.commonReducerState.userDetails._id;
     React.useEffect(() => {
         if (contextData.buyerBookReducerState.buyerBookData.length == 0) {
             fetchBooksData(true);
@@ -22,7 +22,6 @@ export default function BuyerChatList(props) {
         setIsLoading(true);
         let date;
         const dataLength = contextData.buyerBookReducerState.buyerBookData.length;
-        console.log(dataLength)
         if (dataLength != 0 && !initial) {
             date = contextData.buyerBookReducerState.buyerBookData[dataLength - 1].date;
         } else {
@@ -37,7 +36,6 @@ export default function BuyerChatList(props) {
             if (initial) {
                 clearBuyerBook();
             }
-            console.log(response);
             addBuyerBook(response);
             // setBooksData(booksData.concat(response));
         }
@@ -94,7 +92,7 @@ export default function BuyerChatList(props) {
                 />
             </View>
              {
-                contextData.buyerBookReducerState.buyerBookData.filter((item) => item.title.toLowerCase().includes(search.toLowerCase())).length != 0 ?
+                contextData.buyerBookReducerState.buyerBookData.filter((item) => item.title.toLowerCase().includes(search.toLowerCase())).length != 0 && contextData.commonReducerState.userDetails._id ?
                     <View style={{flex:1}}>
 
                         <FlatList
@@ -115,20 +113,21 @@ export default function BuyerChatList(props) {
                                         <Text style={CommonStyles.font2Purple}>{item.price + " ₹"}</Text>
                                         <Text style={CommonStyles.font1Black}>{"Other requests: " + (item.requests.length-1)}</Text>
                                         {
-                                            console.log('requests : ',item.requests),
-                                            statusDecoder(item.requests.filter((i) => i.userID._id == currentUserID)[0].status)!='' &&(
+                                            item.requests.filter((i) => i.userID._id == contextData.commonReducerState.userDetails._id).length!=0 &&(
+                                            statusDecoder(item.requests.filter((i) => i.userID._id == contextData.commonReducerState.userDetails._id)[0].status)!='' &&(
                                                 <Text style={CommonStyles.font1Purple}>{"Status: "}
                                                     {
-                                                    (item.requests.filter((i) => i.userID._id == currentUserID)[0].status == 1 || item.requests.filter((i) => i.userID._id == currentUserID)[0].status == 6) ?
-                                                        <Text style={{ ...CommonStyles.font1Purple, color: 'red' }}>{statusDecoder(item.requests.filter((i) => i.userID._id == currentUserID)[0].status)}</Text>
+                                                        (item.requests.filter((i) => i.userID._id == contextData.commonReducerState.userDetails._id)[0].status == 1 || item.requests.filter((i) => i.userID._id == contextData.commonReducerState.userDetails._id)[0].status == 6) ?
+                                                            <Text style={{ ...CommonStyles.font1Purple, color: 'red' }}>{statusDecoder(item.requests.filter((i) => i.userID._id == contextData.commonReducerState.userDetails._id)[0].status)}</Text>
                                                         :
-                                                        (item.requests.filter((i) => i.userID._id == currentUserID)[0].status == 2 || item.requests.filter((i) => i.userID._id == currentUserID)[0].status == 40) ?
-                                                            <Text style={{ ...CommonStyles.font1Purple, color: 'orange' }}>{statusDecoder(item.requests.filter((i) => i.userID._id == currentUserID)[0].status)}</Text>
+                                                            (item.requests.filter((i) => i.userID._id == contextData.commonReducerState.userDetails._id)[0].status == 2 || item.requests.filter((i) => i.userID._id == contextData.commonReducerState.userDetails._id)[0].status == 40) ?
+                                                                <Text style={{ ...CommonStyles.font1Purple, color: 'orange' }}>{statusDecoder(item.requests.filter((i) => i.userID._id == contextData.commonReducerState.userDetails._id)[0].status)}</Text>
                                                             :
-                                                            <Text style={{ ...CommonStyles.font1Purple, color: 'green' }}>{statusDecoder(item.requests.filter((i) => i.userID._id == currentUserID)[0].status)}</Text>
+                                                                <Text style={{ ...CommonStyles.font1Purple, color: 'green' }}>{statusDecoder(item.requests.filter((i) => i.userID._id == contextData.commonReducerState.userDetails._id)[0].status)}</Text>
                                                     }
                                                 </Text>
 
+                                            )
                                             )
                                         }   
                                     </View>
