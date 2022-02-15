@@ -1,8 +1,7 @@
 import React from 'react'
-import { StyleSheet, Text, View, Modal, ActivityIndicator, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View, Modal} from 'react-native'
 import Colors from '../constant/Colors';
 import { unit, width } from '../constant/ScreenDetails';
-import { aleartOff } from '../context/actions/commonActions';
 import { rootContext } from '../context/store/ContextStore';
 
 export default function Toast(props) {
@@ -13,8 +12,6 @@ export default function Toast(props) {
             supportedOrientations={['portrait', 'landscape']}
             animationType="fade"
             visible={data.commonReducerState.isToast}
-            onRequestClose={() => {
-            }}
         >
             <View style={styles.container}>
                 <Text style={styles.text}>{data.commonReducerState.toastMessage}</Text>
@@ -31,7 +28,6 @@ const styles = StyleSheet.create({
         backgroundColor:Colors.purple,
         justifyContent:'center',
         padding:10* unit,
-
     },
     text:{
         color: Colors.white, 

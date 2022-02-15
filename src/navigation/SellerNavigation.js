@@ -2,6 +2,7 @@ import React from 'react'
 import { createStackNavigator } from '@react-navigation/stack';
 const Stack = createStackNavigator();
 
+//Screens
 import SellerBookList from '../screens/AuthorizedScreen/Chat/Seller/SellerBookList';
 import SellerChatList from '../screens/AuthorizedScreen/Chat/Seller/SellerChatList';
 export default function SellerNaviation() {

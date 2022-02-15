@@ -8,14 +8,16 @@ import { unit } from '../../../constant/ScreenDetails'
 import { fetchUploadedBook } from '../../../networkServices/AuthenticationServices'
 import { rootContext } from '../../../context/store/ContextStore'
 import {  addUserBook, clearUserBook } from '../../../context/actions/userBookAction'
+
 export default function ShowUploadedPost(props) {
     const [search, setSearch] = React.useState('');
     const [isLoading, setIsLoading] = React.useState(false);
     const contextData = React.useContext(rootContext);
+
     React.useEffect(() => {
         fetchBooksData(true);
-
     }, []);
+
     async function fetchBooksData(initial) {
         setIsLoading(true);
         let date;
@@ -35,7 +37,6 @@ export default function ShowUploadedPost(props) {
                 clearUserBook();
             }
             addUserBook(response);
-           // setBooksData(booksData.concat(response));
         }
         setIsLoading(false);
     }

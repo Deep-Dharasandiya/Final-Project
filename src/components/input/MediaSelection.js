@@ -1,8 +1,8 @@
 import React from 'react'
-import { StyleSheet, Text, View, TouchableOpacity, Modal, ScrollView, Image } from 'react-native'
+import { StyleSheet, Text, View, TouchableOpacity, Modal, ScrollView } from 'react-native'
+import CommonStyles from '../../screens/CommonStyles';
 import Colors from '../../constant/Colors';
-import { width, height, unit } from '../../constant/ScreenDetails';
-
+import { width, unit } from '../../constant/ScreenDetails';
 
 export default function MediaSelection(props) {
     const option = (props.data).map((item, index) => {
@@ -30,7 +30,7 @@ export default function MediaSelection(props) {
                 nRequestClose={() => props.flagChange(false)}>
                 <TouchableOpacity
                     onPress={() => props.flagChange(false)}
-                    style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
+                    style={{ flex: 1,...CommonStyles.centerAlignMent}}
                 >
                     <View style={styles.container}>
                         <ScrollView>
@@ -41,7 +41,6 @@ export default function MediaSelection(props) {
                         </ScrollView>
                     </View>
                 </TouchableOpacity>
-
             </Modal>
         </View>
     )

@@ -1,5 +1,5 @@
 import React from 'react'
-import { StyleSheet, Text, View,Image,TouchableOpacity,ScrollView,TextInput,FlatList,ActivityIndicator } from 'react-native'
+import { StyleSheet, Text, View,Image,TouchableOpacity,TextInput,FlatList,ActivityIndicator } from 'react-native'
 //styles
 import CommonStyles from '../../../CommonStyles'
 //utils
@@ -10,7 +10,8 @@ import { addBuyerConfirmation, addReceivedFlag, GetChat, InsertChat } from '../.
 import { addBuyerNewBook, deleteBuyerBook } from '../../../../context/actions/buyerBookActions'
 import { deleteBookPost, updateBookPost } from '../../../../context/actions/bookPostActions'
 import ConfirmationAleart from '../../../../components/confirmationAleart';
-import { addChat, addNewChat, deleteChat, replaceChat } from '../../../../context/actions/chatActions'
+import { addChat, addNewChat, deleteBookChat} from '../../../../context/actions/chatActions'
+
 export default function BuyerChatBoard(props){
     const currentUserID = React.useContext(rootContext).commonReducerState.userDetails._id;
     const [message, setMessage] = React.useState('');
@@ -24,6 +25,7 @@ export default function BuyerChatBoard(props){
     const [confirmationRecievedFalse, setConfirmationRecievedFalse] = React.useState(false);
     const [isNextSearch,setIsNextSearch]= React.useState(true);
     const [insertLoading,setInsertLoading]=React.useState(false);
+
     if (temp != bookDetails) {
         if (temp) {
             setBookDetails(temp);
@@ -41,21 +43,18 @@ export default function BuyerChatBoard(props){
         setIsLoading(true);
         let date;
         const chatdata = data.chatReducerState.chatData.filter((item) => item.bookID == bookDetails._id && (item.senderID == currentUserID || item.senderID == bookDetails.userID._id) && (item.receiverID == currentUserID || item.receiverID == bookDetails.userID._id));
-       console.log(chatdata);
         if (chatdata.length != 0 && !initial) {
             date = chatdata[chatdata.length - 1].date;
-            console.log("in ", chatdata)
         } else {
             date = "current";
         }
-        console.log(date);
+        
         const body = {
             userID1: currentUserID,
             userID2: bookDetails.userID._id,
             bookID: bookDetails._id,
             date: date,
         }
-        console.log(body);
         const response = await GetChat(body);
         if (response) {
             if(response.length !=0 && response.length%20==0){
@@ -64,10 +63,8 @@ export default function BuyerChatBoard(props){
                 setIsNextSearch(false)
             }
             if (initial) {
-                //clearBookPost();
             }
             addChat(response);
-            //setBooksData(booksData.concat(response));
         }
         setIsLoading(false);
     }
@@ -117,12 +114,12 @@ export default function BuyerChatBoard(props){
             if (response.isSold){
                 deleteBuyerBook(response.data._id);
                 deleteBookPost(response.data._id);
+                deleteBookChat(response.data._id);
                 props.navigation.replace("PurchaseHistory");
             }else{
                 deleteBuyerBook(response.data._id);
                 updateBookPost(response.data);
                 addBuyerNewBook(response.data);
-
             }
         }
     }
@@ -167,7 +164,6 @@ export default function BuyerChatBoard(props){
                       </TouchableOpacity>
                       <Image
                           style={{ ...CommonStyles.imageView0 }}
-                          // resizeMode="contain"
                           source={{ uri: bookDetails.userID.profileURL }}
                       />
                     </View>
@@ -241,31 +237,67 @@ export default function BuyerChatBoard(props){
               key={1}
               data={data.chatReducerState.chatData.filter((item) => item.bookID == bookDetails._id && (item.senderID == currentUserID || item.senderID == bookDetails.userID._id) && (item.receiverID == currentUserID || item.receiverID == bookDetails.userID._id))}
               listMode="SCROLLVIEW"
+              extraData={previousChatDate='',currentChatDate=''}
               onEndReached={() => onEndScroll()}
               keyExtractor={(item, index) => `key-${index}`}
-              ListFooterComponent={isLoading && (<ActivityIndicator />)}
-              ListFooterComponentStyle={{
-                  marginVertical: 10 * unit,
-                  width: '100%',
-                  bottom: 0
-              }}
+              ListFooterComponent={
+                  <View>
+                      {
+                          isLoading && (<ActivityIndicator />)
+                      }
+                  </View>
+              }
+
               renderItem={({ item, index }) => {
+                  previousChatDate = currentChatDate;
+                  currentChatDate = new Date(item.date).getFullYear() + "-" + (new Date(item.date).getMonth() + 1) + "-" + new Date(item.date).getDate()
+                  if (index == 0) {
+                      previousChatDate = currentChatDate;
+                  }
                   return <View>
                       {
+                          index !=0 && index == data.chatReducerState.chatData.filter((item) => item.bookID == bookDetails._id && (item.senderID == currentUserID || item.senderID == bookDetails.userID._id) && (item.receiverID == currentUserID || item.receiverID == bookDetails.userID._id)).length-1 && (
+                              <View style={styles.dateView}>
+                                  {
+                                      previousChatDate == new Date().getFullYear() + "-" + (new Date().getMonth() + 1) + "-" + new Date().getDate() ?
+                                          <Text style={{ ...CommonStyles.font1White }}>{"Today"}</Text>
+                                          :
+                                          <Text style={{ ...CommonStyles.font1White }}>{previousChatDate}</Text>
+                                  }
+                              </View>
+                          )
+                      }
+                      {   
                           item.senderID==currentUserID?
                               <View style={styles.messageContainer}>
                                   <View style={styles.messageBody}>
-                                      <Text style={CommonStyles.font1White}>{item.message}</Text>
+                                      <Text style={CommonStyles.font1White}>{item.message }</Text>
+                                      <Text style={{ ...CommonStyles.font1White, fontSize: 11 * unit, position: 'absolute', bottom: 7 * unit, right: 7 * unit, marginTop: 5 * unit }}>{new Date(item.date).getHours() + ":" + new Date(item.date).getMinutes()}</Text>
                                   </View>
                               </View>
                               :
                               <View style={{ ...styles.messageContainer, alignSelf: 'flex-start' }}>
                                   <View style={{ ...styles.messageBody, backgroundColor: Colors.blurPurple, alignSelf: 'flex-start' }}>
-                                      <Text tyle={CommonStyles.font1White}>{item.message}</Text>
+                                      <Text style={CommonStyles.font1Black}>{item.message }</Text>
+                                      <Text style={{...CommonStyles.font1Black,fontSize:11* unit,position:'absolute',bottom:7* unit,right:7* unit,marginTop:5* unit}}>{new Date(item.date).getHours() + ":" + new Date(item.date).getMinutes()}</Text>
 
                                   </View>
+                            
                               </View>
                       }
+                     
+                     {
+                          (index != 0 && previousChatDate != (new Date(item.date).getFullYear() + "-" + (new Date(item.date).getMonth() + 1) + "-" + new Date(item.date).getDate()))  &&(
+                              <View style={styles.dateView}>
+                                  {
+                                      previousChatDate==new Date().getFullYear() + "-" + (new Date().getMonth() + 1) + "-" + new Date().getDate() ?
+                                        <Text style={{...CommonStyles.font1White}}>{"Today"}</Text>
+                                        :
+                                          <Text style={{ ...CommonStyles.font1White }}>{previousChatDate}</Text>   
+                                  }
+                              </View>
+                         )
+                     }
                   </View>
               }}
           />
@@ -332,11 +364,22 @@ const styles = StyleSheet.create({
     messageBody:{
         alignSelf: 'flex-end',
         padding: 10 * unit, 
+        paddingRight:40* unit,
         borderRadius: 10 * unit, 
         backgroundColor: Colors.purple, 
         marginVertical: 5 * unit,
         borderWidth:1,
         borderColor:Colors.purple
+    },
+    dateView:{
+        padding: 5 * unit, 
+        backgroundColor: Colors.purple, 
+        width: 100 * unit, 
+        borderRadius: 10 * unit, 
+        alignSelf: 'center', 
+        alignItems: 'center', 
+        justifyContent: 'center' ,
+        marginVertical:10* unit,
     },
     bottomView: {
         marginVertical: 10 * unit,
@@ -356,7 +399,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'flex-start',
         maxHeight: 150 * unit,
-        //height: width * 0.12,
         width: width * 0.80,
         borderRadius: 25 * unit,
         borderWidth: 1 * unit,

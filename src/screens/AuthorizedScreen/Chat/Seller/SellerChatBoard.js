@@ -3,18 +3,17 @@ import { StyleSheet, Text, View, Image, TouchableOpacity, FlatList, ActivityIndi
 //style
 import CommonStyles from '../../../CommonStyles'
 //utils
-import { color } from 'react-native-reanimated'
 import Colors from '../../../../constant/Colors'
-import { unit,width,height } from '../../../../constant/ScreenDetails'
+import { unit,width } from '../../../../constant/ScreenDetails'
 import { updateBookPost } from '../../../../context/actions/bookPostActions'
-import { addBuyerNewBook, deleteBuyerBook } from '../../../../context/actions/buyerBookActions'
 import { addNewUserBook, deleteUserBook } from '../../../../context/actions/userBookAction'
 import { addDeliveredFlag, addSellerConfirmation, GetChat, InsertChat } from '../../../../networkServices/AuthenticationServices'
 import { rootContext } from '../../../../context/store/ContextStore'
 import ConfirmationAleart from '../../../../components/confirmationAleart';
 import { addChat, addNewChat } from '../../../../context/actions/chatActions'
+
 export default function SellerChatBoard(props) {
-  const [message,setMessage]=React.useState('');
+    const [message,setMessage]=React.useState('');
     const [bookDetails, setBookDetails] = React.useState(props.route.params.bookDetails);
     const [request, setRequest] = React.useState(props.route.params.item)
     const [confirmationDealTrue, setConfirmationDealTrue] = React.useState(false);
@@ -23,9 +22,11 @@ export default function SellerChatBoard(props) {
     const [isNextSearch, setIsNextSearch] = React.useState(true);
     const [insertLoading, setInsertLoading] = React.useState(false);
     const [isLoading, setIsLoading] = React.useState(false);
+
     const data = React.useContext(rootContext);
     const currentUserID = data.commonReducerState.userDetails._id;
     const temp = data.buyerBookReducerState.buyerBookData.filter((item) => item._id == props.route.params.item._id)[0]
+
     if (temp != bookDetails) {
         if (temp) {
             setBookDetails(temp);
@@ -45,21 +46,17 @@ export default function SellerChatBoard(props) {
         setIsLoading(true);
         let date;
         const chatdata = data.chatReducerState.chatData.filter((item) => item.bookID == bookDetails._id && (item.senderID == currentUserID || item.senderID == request.userID._id) && (item.receiverID == currentUserID || item.receiverID == request.userID._id));
-        console.log(chatdata);
         if (chatdata.length != 0 && !initial) {
             date = chatdata[chatdata.length - 1].date;
-            console.log("in ", chatdata)
         } else {
             date = "current";
         }
-        console.log(date);
         const body = {
             userID1: currentUserID,
             userID2: request.userID._id,
             bookID: bookDetails._id,
             date: date,
         }
-        console.log(body);
         const response = await GetChat(body);
         if (response) {
             if (response.length != 0 && response.length % 20 == 0) {
@@ -68,10 +65,8 @@ export default function SellerChatBoard(props) {
                 setIsNextSearch(false)
             }
             if (initial) {
-                //clearBookPost();
             }
             addChat(response);
-            //setBooksData(booksData.concat(response));
         }
         setIsLoading(false);
     }
@@ -90,10 +85,8 @@ export default function SellerChatBoard(props) {
                 message: message
             }
             const response = await InsertChat(body);
-            console.log(response);
             if (response && response.isAdd) {
                 addNewChat(response.data);
-                console.log("hi")
                 setMessage('');
                 setInsertLoading(false);
             }
@@ -239,28 +232,62 @@ export default function SellerChatBoard(props) {
                 listMode="SCROLLVIEW"
                 onEndReached={() => onEndScroll()}
                 keyExtractor={(item, index) => `key-${index}`}
-                ListFooterComponent={isLoading && (<ActivityIndicator />)}
-                ListFooterComponentStyle={{
-                    marginVertical: 10 * unit,
-                    width: '100%',
-                    bottom: 0
-                }}
+                extraData={previousChatDate = '', currentChatDate = ''}
+                ListFooterComponent={
+                    <View>
+                        {
+                            isLoading && (<ActivityIndicator />)
+                        }
+                    </View>
+                }
                 renderItem={({ item, index }) => {
+                    previousChatDate = currentChatDate;
+                    currentChatDate = new Date(item.date).getFullYear() + "-" + (new Date(item.date).getMonth() + 1) + "-" + new Date(item.date).getDate()
+                    if(index==0){
+                        previousChatDate = currentChatDate;
+                    }
+                   
                     return <View>
+                        {
+                            index == data.chatReducerState.chatData.filter((item) => item.bookID == bookDetails._id && (item.senderID == currentUserID || item.senderID == request.userID._id) && (item.receiverID == currentUserID || item.receiverID == request.userID._id)).length - 1 && (
+                                <View style={styles.dateView}>
+                                    {
+                                        previousChatDate == new Date().getFullYear() + "-" + (new Date().getMonth() + 1) + "-" + new Date().getDate() ?
+                                            <Text style={{ ...CommonStyles.font1White }}>{"Today"}</Text>
+                                            :
+                                            <Text style={{ ...CommonStyles.font1White }}>{previousChatDate}</Text>
+                                    }
+                                </View>
+                            )
+                        }
                         {
                             item.senderID == currentUserID ?
                                 <View style={styles.messageContainer}>
                                     <View style={styles.messageBody}>
                                         <Text style={CommonStyles.font1White}>{item.message}</Text>
+                                        <Text style={{ ...CommonStyles.font1White, fontSize: 11 * unit, position: 'absolute', bottom: 7 * unit, right: 7 * unit, marginTop: 5 * unit }}>{new Date(item.date).getHours() + ":" + new Date(item.date).getMinutes()}</Text>
                                     </View>
                                 </View>
                                 :
                                 <View style={{ ...styles.messageContainer, alignSelf: 'flex-start' }}>
                                     <View style={{ ...styles.messageBody, backgroundColor: Colors.blurPurple, alignSelf: 'flex-start' }}>
-                                        <Text tyle={CommonStyles.font1White}>{item.message}</Text>
+                                        <Text style={CommonStyles.font1Black}>{item.message}</Text>
+                                        <Text style={{ ...CommonStyles.font1Black, fontSize: 11 * unit, position: 'absolute', bottom: 7 * unit, right: 7 * unit, marginTop: 5 * unit }}>{new Date(item.date).getHours() + ":" + new Date(item.date).getMinutes()}</Text>
 
                                     </View>
                                 </View>
+                        }
+                        {
+                            (index != 0 && previousChatDate != (new Date(item.date).getFullYear() + "-" + (new Date(item.date).getMonth() + 1) + "-" + new Date(item.date).getDate())) && (
+                                <View style={styles.dateView}>
+                                    {
+                                        previousChatDate == new Date().getFullYear() + "-" + (new Date().getMonth() + 1) + "-" + new Date().getDate() ?
+                                            <Text style={{ ...CommonStyles.font1White }}>{"Today"}</Text>
+                                            :
+                                            <Text style={{ ...CommonStyles.font1White }}>{previousChatDate}</Text>
+                                    }
+                                </View>
+                            )
                         }
                     </View>
                 }}
@@ -306,7 +333,6 @@ export default function SellerChatBoard(props) {
 
 const styles = StyleSheet.create({
     appBar: {
-       // paddingTop: 10 * unit,
         backgroundColor: Colors.purple
     },
     appBarBody: {
@@ -331,11 +357,22 @@ const styles = StyleSheet.create({
     messageBody: {
         alignSelf: 'flex-end',
         padding: 10 * unit,
+        paddingRight: 40 * unit,
         borderRadius: 10 * unit,
         backgroundColor: Colors.purple,
         marginVertical: 5 * unit,
         borderWidth: 1,
         borderColor: Colors.purple
+    },
+    dateView: {
+        padding: 5 * unit,
+        backgroundColor: Colors.purple,
+        width: 100 * unit,
+        borderRadius: 10 * unit,
+        alignSelf: 'center',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginVertical: 10 * unit,
     },
     bottomView: {
         marginVertical: 10 * unit,
@@ -355,7 +392,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'flex-start',
         maxHeight: 150 * unit,
-        //height: width * 0.12,
         width: width * 0.80,
         borderRadius: 25 * unit,
         borderWidth: 1 * unit,

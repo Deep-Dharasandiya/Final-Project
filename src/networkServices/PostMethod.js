@@ -1,14 +1,10 @@
 import { domain } from "../constant/NetworkDomain";
-import { Network_Services } from "../constant/actionType";
-import { loadingStart, loadingOff, aleartOn } from "../context/actions/commonActions";
+import { loadingOff, aleartOn } from "../context/actions/commonActions";
 import NetInfo from "@react-native-community/netinfo";
 export default async function postMethod(body,name) {
     const isConnect = await NetInfo.fetch();
     if (isConnect.isConnected) {
-
         return fetchData(body, name)
-       
-        
     } else {
         loadingOff();
         aleartOn("Your device was offline");

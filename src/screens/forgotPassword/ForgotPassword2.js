@@ -14,8 +14,8 @@ export default function ForgotPassword2(props) {
     const [otp, setotp] = React.useState('');
     const [confirmation, setConfirmation] = React.useState('');
     React.useEffect(() => {
+        signInWithPhoneNumber();
         toastOn('OTP sent on ' + props.route.params.contactNumber)
-       // signInWithPhoneNumber();
     }, []);
     function onChangeOTP(text) {
         setotp(text);
@@ -33,12 +33,13 @@ export default function ForgotPassword2(props) {
             props.navigation.replace('ForgotPassword3', { contactNumber: props.route.params.contactNumber })
         } catch (error) {
            aleartOn('Invalid code.');
+            loadingOff();
         }
     }
     function onVerify(){
         if(otp !=''){
             if(isValidPin(otp)){
-               // confirmCode()
+                //confirmCode()
                 props.navigation.replace('ForgotPassword3', { contactNumber: props.route.params.contactNumber })
             }else{
                 aleartOn("OTP not valid")
@@ -48,7 +49,7 @@ export default function ForgotPassword2(props) {
         }
     }
     function onResendOtp() {
-       // signInWithPhoneNumber();
+        signInWithPhoneNumber();
         toastOn('OTP resent on ' + props.route.params.contactNumber)
     }
     return (

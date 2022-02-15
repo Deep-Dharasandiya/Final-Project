@@ -2,12 +2,16 @@
 import React from 'react'
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+const Tab = createMaterialTopTabNavigator();
+//style
+import CommonStyles from '../screens/CommonStyles';
+//utils
 import Colors from '../constant/Colors';
 import { width, unit } from '../constant/ScreenDetails';
-const Tab = createMaterialTopTabNavigator();
-
+//Screens
 import BuyerNaviation from './BuyerNaviation';
 import SellerNaviation from './SellerNavigation';
+
 export default function ChatNavigation() {
     return (
         <Tab.Navigator tabBar={props => <MyTabBar {...props} />}  >
@@ -19,7 +23,7 @@ export default function ChatNavigation() {
 function MyTabBar({ state, descriptors, navigation }) {
     return (
         <View style={{ backgroundColor: Colors.purple }}>
-            <Text style={{ color: Colors.white, fontSize: 25 * unit, marginLeft: 10 * unit, marginVertical: 10 * unit, fontWeight: '600' }}>Conversations</Text>
+            <Text style={{...CommonStyles.font4White, marginLeft: 10 * unit, marginVertical: 10 * unit }}>Conversations</Text>
         <View style={styles.topTab}>
             {state.routes.map((route, index) => {
                 const { options } = descriptors[route.key];

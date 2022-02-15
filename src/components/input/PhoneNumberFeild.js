@@ -1,5 +1,6 @@
 import React from 'react'
-import { StyleSheet, Text, View, TextInput, Image, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View, TextInput} from 'react-native'
+import CommonStyles from '../../screens/CommonStyles'
 import { width, unit } from '../../constant/ScreenDetails'
 import Colors from '../../constant/Colors'
 
@@ -73,8 +74,7 @@ const styles = StyleSheet.create({
         paddingRight: width * 0.05,
         borderRadius:25* unit,
         borderWidth:1,
-       justifyContent:'center',
-       alignItems:'center',
+        ...CommonStyles.centerAlignMent,
         backgroundColor:Colors.blurPurple
     },
     downArrow: {

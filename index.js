@@ -10,22 +10,22 @@ import { addNewBookPost, deleteBookPost, updateBookPost } from './src/context/ac
 import { addNewUserBook, deleteUserBook } from './src/context/actions/userBookAction';
 import { state } from './src/context/store/ContextStore'
 import { addBuyerNewBook, deleteBuyerBook } from './src/context/actions/buyerBookActions';
-import { addNewChat } from './src/context/actions/chatActions';
+import { addNewChat, deleteBookChat } from './src/context/actions/chatActions';
 
 LogBox.ignoreLogs([
     "[react-native-gesture-handler] Seems like you\'re using an old API with gesture components, check out new Gestures system!",
 ]);
 
 messaging().onNotificationOpenedApp(remoteMessage => {
-    AppRegistry.registerComponent(appName, () => App);
 });
 messaging().getInitialNotification().then(remoteMessage => {
-    AppRegistry.registerComponent(appName, () => App);
+});
+messaging().setBackgroundMessageHandler(async remoteMessage => {
 });
 PushNotification.createChannel(
     {
-        channelId: 'fcm_fallback_notification_channel', // (required)
-        channelName: 'default', // (required)
+        channelId: 'fcm_fallback_notification_channel',
+        channelName: 'default',
     },
 );
 export async function handleNotificationData(remoteData) {
@@ -64,7 +64,8 @@ export async function handleNotificationData(remoteData) {
     else if (data.type == 'BOOK_SOLD') {
         deleteUserBook(data.updateBook._id);
         deleteBuyerBook(data.updateBook._id);
-        deleteBookPost(data.updatedBook._id);
+        deleteBookPost(data.updateBook._id);
+        deleteBookChat(data.updateBook._id)
     }
     else if (data.type == 'Insert_Chat') {
         addNewChat(data.chat);
@@ -85,13 +86,11 @@ PushNotification.configure({
         if (clicked) {
         } else {
             PushNotification.localNotification({
-                //largeIcon: 'ic_launcher',
                 channelId: 'cm_fallback_notification_channel',
                 title: 'Test',
                 android: {
-                    smallIcon: 'name-of-a-small-icon', // optional, defaults to 'ic_launcher'.
+                    smallIcon: 'name-of-a-small-icon',
                 },
-                //message: JSON.stringify(xyz.notificationResponse.bookingId),
             });
         }
     },

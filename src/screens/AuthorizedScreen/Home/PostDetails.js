@@ -8,16 +8,18 @@ import { unit,width } from '../../../constant/ScreenDetails';
 import RoundedButton from '../../../components/button/RoundedButton';
 import { rootContext } from '../../../context/store/ContextStore';
 import { addRequest } from '../../../networkServices/AuthenticationServices';
-import { addNewBookPost, deleteBookPost, updateBookPost } from '../../../context/actions/bookPostActions';
+import { updateBookPost } from '../../../context/actions/bookPostActions';
 import { addBuyerNewBook } from '../../../context/actions/buyerBookActions';
 import { toastOn } from '../../../context/actions/commonActions';
 import ConfirmationAleart from '../../../components/confirmationAleart';
 export default function PostDetails(props) {
     const [bookDetails,setBookDetails]= React.useState(props.route.params.item);
     const[confirmation,setConfirmation]=React.useState(false);
+
     const data = React.useContext(rootContext);
     const currentUserID = data.commonReducerState.userDetails._id;
     const temp = data.bookPostReducerState.bookPostData.filter((item) => item._id == props.route.params.item._id)[0]
+
     if (temp!=bookDetails){
         if (temp) {
             setBookDetails(temp);
@@ -40,8 +42,6 @@ export default function PostDetails(props) {
         const response = await addRequest(body);
         if (response && response.isAdd) {
             addBuyerNewBook(response.data);
-           // deleteBookPost(response.data._id);
-           // addNewBookPost(response.data);
              updateBookPost(response.data);
             toastOn("Your request for book successfully sent.")
             props.navigation.navigate("BuyerChatBoard", { item: response.data})

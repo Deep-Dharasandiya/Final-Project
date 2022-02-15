@@ -6,6 +6,7 @@ import CommonStyles from '../CommonStyles';
 import Colors from '../../constant/Colors';
 import { unit, width } from '../../constant/ScreenDetails';
 export default function PurchaseHistoryDetails(props) {
+    
     const [bookDetails, setBookDetails] = React.useState(props.route.params.item);
     return (
         <View style={CommonStyles.containerBlurPurple}>

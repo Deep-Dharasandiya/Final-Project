@@ -31,6 +31,7 @@ export async function setLogout(data) {
         type: Comman_Actions.SET_LOGOUT,
         payload: data,
     });
+    storeCommanReducer();
 }
 export async function loadingStart(data) {
     await dispatch.commonReducerDispatch({
@@ -64,14 +65,15 @@ export async function toastOn(data) {
     timer();
     
 }
-let myTimeout;
-function timer(){
-    myTimeout = setTimeout(toastOff, 3000);
-}
 export async function toastOff(data) {
     await dispatch.commonReducerDispatch({
         type: Comman_Actions.TOAST_OFF,
         payload: data,
     });
     clearTimeout(myTimeout);
+}
+
+let myTimeout;
+function timer(){
+    myTimeout = setTimeout(toastOff, 3000);
 }

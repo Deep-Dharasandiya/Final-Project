@@ -11,16 +11,16 @@ import { rootContext } from '../../../context/store/ContextStore'
 import { addBookPost } from '../../../context/actions/bookPostActions'
 import MediaSelection from '../../../components/input/MediaSelection'
 import { clearBookPost } from '../../../context/actions/bookPostActions'
-import { aleartOn } from '../../../context/actions/commonActions'
-import ConfirmationAleart from '../../../components/confirmationAleart'
 
 export default function PostList(props) {
     const [search,setSearch] = React.useState('');
     const [filterFlag,setFilterFlag]=React.useState(false);
     const [isLoading, setIsLoading] = React.useState(false);
     const [isCollegeOnly,setIsCollegeOnly]=React.useState(false)
+
     const contextData = React.useContext(rootContext);
     const currentUserID = contextData.commonReducerState.userDetails._id;
+
     useFocusEffect(
         React.useCallback(() => {
             return () => {
@@ -45,7 +45,6 @@ export default function PostList(props) {
                 fetchBooksData();
             }
            setIsCollegeOnly(true);
-
         }else{
           setIsCollegeOnly(false);
         }
@@ -73,7 +72,6 @@ export default function PostList(props) {
                 clearBookPost();
             }
             addBookPost(response);
-            //setBooksData(booksData.concat(response));
         }
         setIsLoading(false);
     }

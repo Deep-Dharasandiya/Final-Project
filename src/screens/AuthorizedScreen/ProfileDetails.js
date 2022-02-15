@@ -1,5 +1,5 @@
 import React from 'react'
-import { ScrollView, StyleSheet, Text, View, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
+import { ScrollView, StyleSheet, Text, View, TouchableOpacity, Image } from 'react-native';
 //styles
 import CommonStyles from '../CommonStyles';
 //utils
@@ -31,20 +31,24 @@ export default function ProfileDetails(props) {
                     source={{ uri: details.profileURL }}
                     style={{...CommonStyles.imageView2,alignSelf:'center'}}
                 />
-                <View style={{ marginLeft: 15 * unit, marginTop: 15 * unit }}>
+                <View style={{ marginLeft: 10 * unit, marginTop: 15 * unit }}>
                     <Text style={{...CommonStyles.font4Purple,alignSelf:'center'}}>{details.firstName + " " + details.lastName}</Text>
-                    <Text style={{ ...CommonStyles.font2Black, fontWeight: '300',marginTop:10* unit }}>{"contact : " + details.contactNumber}</Text>
-                    <Text style={{ ...CommonStyles.font2Black, fontWeight: '300' }}>{"Email : " + details.email}</Text>
-                    <Text style={{ ...CommonStyles.font2Black, fontWeight: '300' }}>{"College : " + details.college}</Text>
-                    <Text style={{ ...CommonStyles.font2Black, fontWeight: '300' }}>{"City : " + details.city}</Text>
-                    {/* <Text style={CommonStyles.font4Purple}>{"₹ " + price}</Text>
-                    <Text style={{ ...CommonStyles.font2Black, fontWeight: '500', marginTop: 10 * unit }}>About Book:</Text>
-
-                    <View style={CommonStyles.textView}>
-                        <Text style={{ ...CommonStyles.font1Black, fontWeight: '300' }}>
-                            {description}
-                        </Text>
-                    </View> */}
+                    <View style={{...styles.detailsView,marginTop:30* unit}}>
+                        <Text style={styles.detailsHeading}>{"Contact"}</Text>
+                        <Text style={styles.detailsValue}>{details.contactNumber}</Text>
+                    </View>
+                    <View style={styles.detailsView}>
+                        <Text style={styles.detailsHeading}>{"Email"}</Text>
+                        <Text style={styles.detailsValue}>{details.email}</Text>
+                    </View>
+                    <View style={styles.detailsView}>
+                        <Text style={styles.detailsHeading}>{"College"}</Text>
+                        <Text style={styles.detailsValue}>{details.college}</Text>
+                    </View>
+                    <View style={styles.detailsView}>
+                        <Text style={styles.detailsHeading}>{"City"}</Text>
+                        <Text style={styles.detailsValue}>{details.city}</Text>
+                    </View>
                 </View>
             </ScrollView>
         </View>
@@ -77,5 +81,25 @@ const styles = StyleSheet.create({
     btnText: {
         fontSize: 20 * unit,
         color: Colors.white
+    },
+    detailsView:{
+        flexDirection: 'row', 
+        alignItems: 'center', 
+        justifyContent: 'space-between', 
+        marginTop: 10 * unit,
+        borderRadius:5* unit,
+        borderBottomWidth:0.3,
+        borderColor:Colors.black,
+        paddingBottom:5* unit
+    },
+    detailsHeading:{
+        ...CommonStyles.font2Black, 
+        fontWeight: '600'
+    },
+    detailsValue:{
+        ...CommonStyles.font2Black, 
+        fontWeight: '300', 
+        marginRight: 10 * unit, 
+        marginLeft: 50 * unit
     }
 })

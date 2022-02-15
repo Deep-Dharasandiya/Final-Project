@@ -43,10 +43,7 @@ export default function TextFeild(props) {
                         </TouchableOpacity>
                     )
                 }
-                
-
             </View>
-            
         </View>
     )
 }

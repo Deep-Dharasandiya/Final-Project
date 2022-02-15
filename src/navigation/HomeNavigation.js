@@ -2,7 +2,7 @@ import React from 'react'
 import { createStackNavigator } from '@react-navigation/stack';
 const Stack = createStackNavigator();
 
-
+//Screens
 import PostList from '../screens/AuthorizedScreen/Home/PostList';
 import PostDetails from '../screens/AuthorizedScreen/Home/PostDetails';
 

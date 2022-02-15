@@ -1,11 +1,11 @@
 import React from 'react'
-import { StyleSheet, Text, View,TouchableOpacity,Image ,FlatList, ActivityIndicator,TextInput} from 'react-native'
+import { StyleSheet, Text, View,TouchableOpacity,Image ,FlatList,TextInput} from 'react-native'
 //styles
 import CommonStyles from '../../../CommonStyles';
 //utils
 import { rootContext } from '../../../../context/store/ContextStore';
 import Colors from '../../../../constant/Colors';
-import { unit,width } from '../../../../constant/ScreenDetails';
+import { unit } from '../../../../constant/ScreenDetails';
 import { aleartOn } from '../../../../context/actions/commonActions';
 
 export default function SellerChatList(props) {
@@ -121,7 +121,6 @@ export default function SellerChatList(props) {
                     <View style={{ flex: 1, ...CommonStyles.centerAlignMent }}>
                         <Text style={CommonStyles.font2Purple}>Request Found</Text>
                     </View>
-
             }
            
         </View>

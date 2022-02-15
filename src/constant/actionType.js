@@ -39,9 +39,10 @@ export const Buyer_Book_Actions = {
 }
 
 export const Chats_Actions={
+    SET_CHAT:"SET_CHAT",
     ADD_NEW_CHAT:"ADD_NEW_CHAT",
     ADD_CHAT:"ADD_CHAT",
-    DELETE_CHAT:'DELETE_CHAT',
+    DELETE_BOOK_CHAT:'DELETE_BOOK_CHAT',
     REPLACE_CHAT:'REPLACE_CHAT',
     CLEAR_CHATS:'CLEAR_CHATS',
 }

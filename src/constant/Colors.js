@@ -2,7 +2,6 @@
 const Colors={
     orange:'#1E90FF',
     white:'white',
-   //white:'#D7D8DA',
     purple:'#A134F8',
     lightPurple:'#CD8EFF',
     blurPurple:'#F2E2FF',

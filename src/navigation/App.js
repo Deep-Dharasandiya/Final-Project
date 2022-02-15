@@ -1,21 +1,21 @@
 import React from 'react'
 import { StatusBar,Platform} from 'react-native'
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import ContextStore from '../context/store/ContextStore';
-import { rootContext } from '../context/store/ContextStore';
-import PushNotification from 'react-native-push-notification';
-import Loader from '../components/Loader';
-import { getBookPost, getCommanReducer, getUserBook} from '../context/localStorage/LocalStorage';
-import { setFCMToken } from '../context/actions/commonActions';
-import messaging from '@react-native-firebase/messaging';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+const Stack = createStackNavigator();
+
+//utils
+import ContextStore from '../context/store/ContextStore';
+import { rootContext } from '../context/store/ContextStore';
+import Loader from '../components/Loader';
+import { getBookPost, getBuyerBook, getChat, getCommanReducer, getUserBook} from '../context/localStorage/LocalStorage';
 import Aleart from '../components/Aleart';
 import Toast from '../components/Toast';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-const Stack = createStackNavigator();
 import { handleNotificationData } from '../..';
 
+//Screen unathorized
 import LandingScreen from '../screens/LandingScreen'
 import Login from '../screens/Login';
 import FAQ from '../screens/FAQ';
@@ -28,6 +28,7 @@ import ForgotPassword3 from '../screens/forgotPassword/ForgotPassword3';
 import TermsAndCondition from '../screens/TermsAndCondition';
 import PrivacyPolicy from '../screens/PrivacyPolicy';
 
+//Screen athorized
 import BottomTabNavigation from './BottomTabNavigation';
 import ProfileDetails from '../screens/AuthorizedScreen/ProfileDetails';
 import SellerChatBoard from '../screens/AuthorizedScreen/Chat/Seller/SellerChatBoard';
@@ -36,7 +37,7 @@ import SoldHistory from '../screens/AuthorizedScreen/SoldHistory';
 import SoldHistoryDetails from '../screens/AuthorizedScreen/SoldHistoryDetails';
 import PurchaseHistory from '../screens/AuthorizedScreen/PurchaseHistory';
 import PurchaseHistoryDetails from '../screens/AuthorizedScreen/PurchaseHistoryDetails';
-import { Colors } from '../constant/Colors'
+
 
 export default function App(props) {
   const [isLoad, setIsLoad] = React.useState(false);
@@ -44,6 +45,8 @@ export default function App(props) {
     await getBookPost();
     await getCommanReducer();
     await getUserBook();
+    await getBuyerBook();
+    await getChat();
     const temp = JSON.parse(await AsyncStorage.getItem('notification'));
     if(temp){
       for (i = 0; i < temp.length; i++) {
@@ -55,11 +58,7 @@ export default function App(props) {
   }
   React.useEffect( () => {
     getInitialDetails();
-    if(Platform.OS=='android'){
-      //StatusBar.setTranslucent(true);
-    }
     StatusBar.setBarStyle('dark-content', true);
-   // PushNotification.deleteChannel("fcm_fallback_notification_channel");
   }, []);
   return (
     <ContextStore>
@@ -82,7 +81,7 @@ function AllScreens(){
         isVisible={data.commonReducerState.isLoading}
       />
       <StatusBar 
-      barStyle="light-content"
+        barStyle="light-content"
         backgroundColor={'#A134F8'}
        />
       <Aleart/>

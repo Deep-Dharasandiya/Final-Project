@@ -1,5 +1,6 @@
 import React from 'react'
-import { StyleSheet, Text, View ,Modal,ActivityIndicator,TouchableOpacity} from 'react-native'
+import { StyleSheet, Text, View ,Modal,TouchableOpacity} from 'react-native'
+import CommonStyles from '../screens/CommonStyles';
 import Colors from '../constant/Colors';
 import { unit,width } from '../constant/ScreenDetails';
 import { aleartOff } from '../context/actions/commonActions';
@@ -19,12 +20,12 @@ export default function Aleart(props) {
         >
              <TouchableOpacity
                 onPress={() => aleartOff()}
-                style={{flex:1,alignItems:'center',justifyContent:'center'}}
+                style={{flex:1,...CommonStyles.centerAlignMent}}
                 >
                 <View style={styles.container}>
-                    <Text style={{ fontSize: 18 * unit, marginTop: 10 * unit }}>{data.commonReducerState.aleartMessage}</Text>
-                    <View style={{width:60 * unit,backgroundColor:Colors.blurPurple,padding:5 *unit,alignItems:'center',justifyContent:'center',borderRadius:5 * unit,marginVertical:10 * unit}}>
-                        <Text style={{color:Colors.lightblue,fontWeight:'600'}}>OK</Text>
+                    <Text style={{ ...CommonStyles.font1Black, marginTop: 10 * unit }}>{data.commonReducerState.aleartMessage}</Text>
+                    <View style={styles.btn}>
+                        <Text style={{...CommonStyles.font2Purple,fontWeight:'600'}}>OK</Text>
                         </View>
 
                 </View>
@@ -46,6 +47,15 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
+    btn:{
+        width: 60 * unit, 
+        backgroundColor: Colors.blurPurple, 
+        padding: 5 * unit, 
+        alignItems: 'center', 
+        justifyContent: 'center', 
+        borderRadius: 5 * unit, 
+        marginVertical: 10 * unit
+    }
 })
 
 

@@ -1,6 +1,6 @@
 import { dispatch } from "../store/ContextStore";
-import { storeBookPost, storeCommanReducer } from "../localStorage/LocalStorage";
-import { Local_Srorage, Buyer_Book_Actions } from "../../constant/actionType";
+import { storeBuyerBook } from "../localStorage/LocalStorage";
+import { Buyer_Book_Actions } from "../../constant/actionType";
 
 export function setBuyerBook(data) {
     dispatch.buyerBookReducerDispatch({
@@ -14,20 +14,21 @@ export function addBuyerBook(data) {
         type: Buyer_Book_Actions.ADD_BUYER_BOOK,
         payload: data,
     });
+    storeBuyerBook()
 }
 export function addBuyerNewBook(data) {
     dispatch.buyerBookReducerDispatch({
         type: Buyer_Book_Actions.ADD_NEW_BUYER_BOOK,
         payload: data,
     });
-    
+    storeBuyerBook()
 }
 export function deleteBuyerBook(data) {
     dispatch.buyerBookReducerDispatch({
         type: Buyer_Book_Actions.DELETE_BUYER_BOOK,
         payload: data,
     });
-   
+    storeBuyerBook()
 }
 
 export function clearBuyerBook(data) {
@@ -35,5 +36,5 @@ export function clearBuyerBook(data) {
         type: Buyer_Book_Actions.CLEAR_BOOK,
         payload: data,
     });
-    
+    storeBuyerBook()
 }

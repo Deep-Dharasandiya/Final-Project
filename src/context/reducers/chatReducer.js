@@ -5,6 +5,11 @@ export const chatReducerInitialState = {
 
 export default function chatReducer(state = chatReducerInitialState, action) {
     switch (action.type) {
+        case Chats_Actions.SET_CHAT:
+            return {
+                ...state,
+                chatData: action.payload
+            }
         case Chats_Actions.ADD_CHAT:
             return {
                 ...state,
@@ -15,10 +20,10 @@ export default function chatReducer(state = chatReducerInitialState, action) {
                 ...state,
                 chatData: [action.payload].concat(state.chatData)
             }
-        case Chats_Actions.DELETE_CHAT:
+        case Chats_Actions.DELETE_BOOK_CHAT:
             return {
                 ...state,
-                chatData: state.chatData.filter((item)=>item._id != action.payload)
+                chatData: state.chatData.filter((item)=>item.bookID != action.payload)
             }
         case Chats_Actions.CLEAR_CHATS:
             return {

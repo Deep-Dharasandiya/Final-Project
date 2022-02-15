@@ -2,6 +2,7 @@ import React from 'react'
 import { createStackNavigator } from '@react-navigation/stack';
 const Stack = createStackNavigator();
 
+//Screens
 import ShowUploadedPost from '../screens/AuthorizedScreen/Upload/ShowUploadedPost'
 import ShowUploadedPostDetails from '../screens/AuthorizedScreen/Upload/ShowUploadedPostDetails';
 

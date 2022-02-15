@@ -1,24 +1,21 @@
 import React from 'react'
-import { StyleSheet, Text, View, Modal, ActivityIndicator, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View, Modal, TouchableOpacity } from 'react-native'
+import CommonStyles from '../screens/CommonStyles';
 import { unit, width } from '../constant/ScreenDetails';
 import Colors from '../constant/Colors'
-import CommonStyles from '../screens/CommonStyles';
-export default function ConfirmationAleart(props) {
 
+export default function ConfirmationAleart(props) {
     return (
         <Modal
             transparent={true}
             supportedOrientations={['portrait', 'landscape']}
             animationType='none'
             visible={props.isVisible}
-            onRequestClose={() => {
-                //props.fn(false);
-            }}
         >
-            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+            <View style={{ flex: 1,...CommonStyles.centerAlignMent}}>
                 <View style={styles.container}>
                     <Text style={CommonStyles.font1Black}>{props.lable}</Text>
-                    <View style={{flexDirection:'row',alignItems:'center',justifyContent:'space-around',marginTop:10* unit}}>
+                    <View style={styles.btnView}>
                         <TouchableOpacity style={styles.btn}
                             onPress={() => props.onPress(true)}
                         >
@@ -52,6 +49,12 @@ const styles = StyleSheet.create({
         elevation: 10 * unit,
         justifyContent:'center'
        
+    },
+    btnView:{
+        flexDirection: 'row', 
+        alignItems: 'center', 
+        justifyContent: 'space-around', 
+        marginTop: 10 * unit
     },
     btn: {
         padding: 5 * unit,

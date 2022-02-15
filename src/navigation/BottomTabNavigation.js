@@ -1,19 +1,18 @@
 import React from "react";
-import {StyleSheet,View, Text, TouchableOpacity,Image,StatusBar} from 'react-native';
+import {StyleSheet,View, TouchableOpacity,Image } from 'react-native';
 import SplashScreen from 'react-native-splash-screen';
-import Colors from "../constant/Colors";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { width,unit,height } from "../constant/ScreenDetails";
-
 const Tab = createBottomTabNavigator();
-
+//utils
+import Colors from "../constant/Colors";
+import { unit } from "../constant/ScreenDetails";
+//Screens
 import UploadNavigation from "./UploadNavigation";
 import ChatNavigation from "./ChatNavigation";
 import Drawer from './Drawer';
 
 export default function BottomTabNavigation(props) {
   React.useEffect(() => {
-   // StatusBar.setBarStyle('dark-content', true);
     SplashScreen.hide();
   }, []);
     return (
@@ -66,7 +65,6 @@ function MyTabBar({state, descriptors, navigation,props}) {
           });
 
           if (!isFocused && !event.defaultPrevented) {
-           // navigation.dispatch(DrawerActions.closeDrawer());
             navigation.navigate(route.name);
           }
         };

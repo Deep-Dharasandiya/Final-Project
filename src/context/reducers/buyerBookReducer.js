@@ -8,7 +8,7 @@ export default function buyerBookReducer(state = bookPostReducerInitialState, ac
         case Buyer_Book_Actions.SET_BUYER_BOOK_STATE:
             return {
                 ...state,
-                buyerBookData: state.buyerBookData.concat(action.payload)
+                buyerBookData: action.payload
             }
         case Buyer_Book_Actions.ADD_BUYER_BOOK:
             return {

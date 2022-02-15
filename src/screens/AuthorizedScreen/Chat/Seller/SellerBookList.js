@@ -4,7 +4,7 @@ import { Text, TouchableOpacity, View, Image, TextInput, FlatList,ActivityIndica
 import CommonStyles from '../../../CommonStyles'
 //utils
 import Colors from '../../../../constant/Colors'
-import { unit, width } from '../../../../constant/ScreenDetails'
+import { unit } from '../../../../constant/ScreenDetails'
 import { fetchUploadedBook } from '../../../../networkServices/AuthenticationServices'
 import { rootContext } from '../../../../context/store/ContextStore'
 import {  addUserBook, clearUserBook } from '../../../../context/actions/userBookAction'
@@ -38,7 +38,6 @@ export default function SellerBookList(props) {
                 clearUserBook();
             }
             addUserBook(response);
-            // setBooksData(booksData.concat(response));
         }
         setIsLoading(false);
     }

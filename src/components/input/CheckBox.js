@@ -1,5 +1,6 @@
 import React from 'react'
-import { StyleSheet, Text, View,TouchableOpacity,Image } from 'react-native'
+import { StyleSheet,TouchableOpacity,Image } from 'react-native'
+import CommonStyles from '../../screens/CommonStyles'
 import Colors from '../../constant/Colors'
 import { unit } from '../../constant/ScreenDetails'
 
@@ -25,7 +26,6 @@ export default function CheckBox(props) {
          </TouchableOpacity>
     )
 }
-
 const styles = StyleSheet.create({
     container:{
         backgroundColor: Colors.purple,
@@ -33,8 +33,7 @@ const styles = StyleSheet.create({
         width:30 * unit,
         borderRadius:15 * unit,
         borderWidth:1,
-        alignItems:'center',
-        justifyContent:'center',
+       ...CommonStyles.centerAlignMent
     },
     checkMark:{
         width:15 * unit,

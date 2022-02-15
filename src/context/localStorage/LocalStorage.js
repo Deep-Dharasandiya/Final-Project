@@ -1,21 +1,22 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { state } from '../store/ContextStore';
-import { aleartOff, aleartOn, loadingOff, setcommonReducerState, toastOff } from '../actions/commonActions';
+import { loadingOff, setcommonReducerState, toastOff } from '../actions/commonActions';
 import { setBookPost } from '../actions/bookPostActions';
 import {  addUserBook } from '../actions/userBookAction';
+import { setBuyerBook } from '../actions/buyerBookActions';
+import { setChat } from '../actions/chatActions';
 export async function storeCommanReducer(){
     try {
         await AsyncStorage.setItem('COMMON_REDUCER', JSON.stringify(state.commonReducerState));
         return true;
     } catch (e) {
-        alert('Failed to save the data to the storage')
+        alert('Some internal error occur')
         return false;
     }
 }
 export async function getCommanReducer() {
     try {
         const temp = await AsyncStorage.getItem('COMMON_REDUCER')
-        console.log(JSON.parse(temp));
         if (temp) {
             setcommonReducerState(JSON.parse(temp));
             loadingOff();
@@ -23,7 +24,7 @@ export async function getCommanReducer() {
         }
         return true;
     } catch (e) {
-        alert('Failed to get the data to the storage')
+        alert('Some internal error occur')
         return false; s
     }
 }
@@ -32,7 +33,7 @@ export async function storeBookPost() {
         await AsyncStorage.setItem('BOOK_POST', JSON.stringify(state.bookPostReducerState.bookPostData));
         return true;
     } catch (e) {
-        alert('Failed to save the data to the storage')
+        alert('Some internal error occur')
         return false;
     }
 }
@@ -46,7 +47,7 @@ export async function getBookPost() {
         }
         return true;
     } catch (e) {
-        alert('Failed to get the data to the storage')
+        alert('Some internal error occur')
         return false; s
     }
 }
@@ -55,7 +56,7 @@ export async function storeUserBook() {
         await AsyncStorage.setItem('USER_BOOK', JSON.stringify(state.userBookReducerState.userBookData));
         return true;
     } catch (e) {
-        alert('Failed to save the data to the storage')
+        alert('Some internal error occur')
         return false;
     }
 }
@@ -69,7 +70,54 @@ export async function getUserBook() {
         }
         return true;
     } catch (e) {
-        alert('Failed to get the data to the storage')
+        alert('Some internal error occur')
+        return false; s
+    }
+}
+
+export async function storeBuyerBook() {
+    try {
+        await AsyncStorage.setItem('BUYER_BOOK', JSON.stringify(state.buyerBookReducerState.buyerBookData));
+        return true;
+    } catch (e) {
+        alert('Some internal error occur')
+        return false;
+    }
+}
+
+export async function getBuyerBook() {
+    try {
+        const temp = await AsyncStorage.getItem('BUYER_BOOK')
+        if (temp) {
+            setBuyerBook(JSON.parse(temp));
+            toastOff();
+        }
+        return true;
+    } catch (e) {
+        alert('Some internal error occur')
+        return false; s
+    }
+}
+export async function storeChat() {
+    try {
+        await AsyncStorage.setItem('CHAT', JSON.stringify(state.chatReducerState.chatData));
+        return true;
+    } catch (e) {
+        alert('Some internal error occur')
+        return false;
+    }
+}
+
+export async function getChat() {
+    try {
+        const temp = await AsyncStorage.getItem('CHAT')
+        if (temp) {
+            setChat(JSON.parse(temp));
+            toastOff();
+        }
+        return true;
+    } catch (e) {
+        alert('Some internal error occur')
         return false; s
     }
 }

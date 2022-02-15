@@ -5,8 +5,10 @@ import CommonStyles from '../CommonStyles';
 //utils
 import Colors from '../../constant/Colors';
 import { unit, width } from '../../constant/ScreenDetails';
+
 export default function SoldHistoryDetails(props) {
     const [bookDetails, setBookDetails] = React.useState(props.route.params.item);
+    
     return (
         <View style={CommonStyles.containerBlurPurple}>
             <View style={styles.appBar}>

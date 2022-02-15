@@ -15,7 +15,7 @@ export default function Register2(props) {
     const [confirmation , setConfirmation] =React.useState('');
 
     React.useEffect(() => {
-       // signInWithPhoneNumber();
+        signInWithPhoneNumber();
         toastOn("OTP sent on " + props.route.params.contactNumber)
     }, []);
 
@@ -35,6 +35,7 @@ export default function Register2(props) {
             props.navigation.replace('Register3', { contactNumber: props.route.params.contactNumber })
         } catch (error) {
             aleartOn('Invalid code.');
+            loadingOff();
         }
     }
     function onVerify() {
@@ -50,7 +51,7 @@ export default function Register2(props) {
         }
     }
     function onResendOtp() {
-        //signInWithPhoneNumber();
+        signInWithPhoneNumber();
         toastOn("OTP resent on " + props.route.params.contactNumber)
     }
     return (

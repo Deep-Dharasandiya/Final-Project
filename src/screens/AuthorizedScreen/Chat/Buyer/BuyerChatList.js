@@ -11,8 +11,8 @@ import { addBuyerBook, clearBuyerBook } from '../../../../context/actions/buyerB
 export default function BuyerChatList(props) {
     const [search, setSearch] = React.useState('');
     const [isLoading, setIsLoading] = React.useState(false);
+
     const contextData = React.useContext(rootContext);
-   // const currentUserID = contextData.commonReducerState.userDetails._id;
     React.useEffect(() => {
         if (contextData.buyerBookReducerState.buyerBookData.length == 0) {
             fetchBooksData(true);
@@ -37,7 +37,6 @@ export default function BuyerChatList(props) {
                 clearBuyerBook();
             }
             addBuyerBook(response);
-            // setBooksData(booksData.concat(response));
         }
         setIsLoading(false);
     }
@@ -55,21 +54,21 @@ export default function BuyerChatList(props) {
     function statusDecoder(status) {
         if (status == 0) {
             return "";
-        } else if (status == 1) {//red
+        } else if (status == 1) {
             return "Awaiting your confirmation"
-        } else if (status == 2) {//yellow
+        } else if (status == 2) {
             return "Deal finalized, awaiting delivery"
         } else if (status == 20) {
             return ""
         }
         else if (status == 3) {
-            return "Delivered by seller" //green
+            return "Delivered by seller" 
         }
         else if (status == 4) {
-            return "Book received" //green
+            return "Book received" 
         } else if (status == 40) {
             return 'Deal finalized, awaiting delivery'
-        } else {//red
+        } else {
             return "Deal finalized with other"
         }
     }
@@ -138,10 +137,6 @@ export default function BuyerChatList(props) {
                                     >
                                         <Text style={CommonStyles.font2White}>Let's Chat</Text>
                                     </TouchableOpacity>
-                                    {/* <Image
-                                        source={{ uri: item.coverURL }}
-                                        style={CommonStyles.imageView3}
-                                    /> */}
                                 </TouchableOpacity>
 
                             }}

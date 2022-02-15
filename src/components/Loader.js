@@ -1,6 +1,7 @@
 import React from 'react'
-import { StyleSheet, Text, View ,Modal,ActivityIndicator,TouchableOpacity} from 'react-native'
-import {unit,width} from '../constant/ScreenDetails';
+import { StyleSheet, Text, View ,Modal,ActivityIndicator} from 'react-native'
+import CommonStyles from '../screens/CommonStyles';
+import {unit} from '../constant/ScreenDetails';
 import Colors from '../constant/Colors'
 export default function Loader(props) {
    
@@ -10,11 +11,8 @@ export default function Loader(props) {
           supportedOrientations={['portrait', 'landscape']}
           animationType='none'
           visible={props.isVisible}
-          onRequestClose={() => {
-            //props.fn(false);
-          }}
         >
-            <View  style={{flex:1,alignItems:'center',justifyContent:'center'}}>
+            <View  style={{flex:1,...CommonStyles.centerAlignMent}}>
                 <View style={styles.container}>
                     <ActivityIndicator
                         animating={props.isVisible}
@@ -22,7 +20,7 @@ export default function Loader(props) {
                         size={'large'}
                         style={{marginVertical:15 *unit}}
                         />
-                    <Text style={{fontSize:18*unit,}}>Please Wait</Text>
+                    <Text style={CommonStyles.font2Black}>Please Wait</Text>
                 </View>
             </View>
          

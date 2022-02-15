@@ -17,6 +17,7 @@ import { addNewUserBook } from '../../../context/actions/userBookAction'
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 
 export default function UoloadPost(props) {
+
     const [coverUri, setCoverUri] = React.useState('');
     const [mediaFlag, setMediaFlag] = React.useState(false);
     const [title, setTitle] = React.useState('');
@@ -25,6 +26,7 @@ export default function UoloadPost(props) {
     const [condition, setCondition] = React.useState('');
     const [firebaseUri, setFirebaseUri] = React.useState('');
     const [imageLoader, setImageLoader] = React.useState(false);
+
     const data = React.useContext(rootContext);
     let conditionData = [{
         value: 'Poor',
@@ -215,7 +217,6 @@ export default function UoloadPost(props) {
                     isEnable={title != '' && condition != '' && price != '' && description != '' && !imageLoader && firebaseUri!=''}
                     Style={{ marginVertical: 20 * unit }}
                 />
-            
             </ScrollView>
         </View>
     )

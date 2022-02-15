@@ -7,9 +7,9 @@ import Colors from '../../../../constant/Colors';
 import { unit, width } from '../../../../constant/ScreenDetails';
 import RoundedButton from '../../../../components/button/RoundedButton';
 import { rootContext } from '../../../../context/store/ContextStore';
-import { addBuyerConfirmation, addReceivedFlag, DeleteRequest } from '../../../../networkServices/AuthenticationServices';
-import { addBuyerNewBook, deleteBuyerBook } from '../../../../context/actions/buyerBookActions';
-import { deleteBookPost, updateBookPost } from '../../../../context/actions/bookPostActions';
+import { DeleteRequest } from '../../../../networkServices/AuthenticationServices';
+import { deleteBuyerBook } from '../../../../context/actions/buyerBookActions';
+import { updateBookPost } from '../../../../context/actions/bookPostActions';
 import ConfirmationAleart from '../../../../components/confirmationAleart';
 
 export default function BuyerBookDetails(props) {
@@ -31,6 +31,7 @@ export default function BuyerBookDetails(props) {
         
         const response = await DeleteRequest(body);
         if (response && response.isDelete) {
+            updateBookPost(response.data);
             deleteBuyerBook(response.data._id)
             props.navigation.pop();
         }

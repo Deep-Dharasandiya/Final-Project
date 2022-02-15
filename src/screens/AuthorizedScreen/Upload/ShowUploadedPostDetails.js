@@ -16,6 +16,7 @@ import { deleteBook, updateUploadedBook } from '../../../networkServices/Authent
 import { aleartOn, toastOn } from '../../../context/actions/commonActions';
 import RoundedButton from '../../../components/button/RoundedButton';
 import ConfirmationAleart from '../../../components/confirmationAleart';
+
 export default function ShowUploadedPostDetails(props) {
     const oldURL = props.route.params.item.coverURL;
     const [coverURL, setCoverURL] = React.useState(props.route.params.item.coverURL)
@@ -28,6 +29,7 @@ export default function ShowUploadedPostDetails(props) {
     const [firebaseUri, setFirebaseUri] = React.useState(oldURL);
     const [imageLoader, setImageLoader] = React.useState(false);
     const [confirmation, setConfirmation] = React.useState(false);
+    
     const data = React.useContext(rootContext);
     let conditionData = [{
         value: 'Poor',

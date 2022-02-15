@@ -13,6 +13,7 @@ export default function SoldHistory(props) {
     const [search, setSearch] = React.useState('');
     const [isLoading, setIsLoading] = React.useState(false);
     const [history,setHistory]=React.useState([]);
+    
     const contextData = React.useContext(rootContext);
     const currentUserID = contextData.commonReducerState.userDetails._id;
     React.useEffect(() => {
@@ -26,7 +27,6 @@ export default function SoldHistory(props) {
             userID: currentUserID,
         }
         const response = await GetSoldHistory(body);
-        console.log(response);
         if (response) {
             setHistory(response)
         }

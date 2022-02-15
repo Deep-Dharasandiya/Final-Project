@@ -1,7 +1,8 @@
 import React from 'react'
 import { StyleSheet, Text, View ,TouchableOpacity,Modal,ScrollView,Image} from 'react-native'
+import CommonStyles from '../../screens/CommonStyles';
 import Colors from '../../constant/Colors';
-import { width,height,unit } from '../../constant/ScreenDetails';
+import { width,unit } from '../../constant/ScreenDetails';
 
 
 export default function DropDawnList(props) {
@@ -35,15 +36,14 @@ export default function DropDawnList(props) {
                     source={require('../../assets/downArrow/downArrow.png')}
                 />
             </TouchableOpacity>
-
             <Modal
                 transparent={true}
                 animationType='none'
                 visible={isModalVisible}
-                nRequestClose={() => setIsModalVisible(false)}>
+                onRequestClose={() => setIsModalVisible(false)}>
                 <TouchableOpacity
                     onPress={() => setIsModalVisible(false)}
-                    style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
+                    style={{ flex: 1,...CommonStyles.centerAlignMent }}
                 >
                     <View style={styles.container}>
                         <ScrollView>
@@ -54,7 +54,6 @@ export default function DropDawnList(props) {
                         </ScrollView>
                     </View>
                 </TouchableOpacity>
-
             </Modal>
         </View>
     )
@@ -110,7 +109,6 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.5,
         shadowRadius: 4,
         elevation: 20 * unit,
-
         justifyContent: 'center'
     },
     title: {

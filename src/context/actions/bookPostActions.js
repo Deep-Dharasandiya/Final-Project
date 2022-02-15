@@ -1,6 +1,6 @@
 import { dispatch } from "../store/ContextStore";
-import { storeBookPost, storeCommanReducer } from "../localStorage/LocalStorage";
-import { Local_Srorage, BookPost_Actions } from "../../constant/actionType";
+import { storeBookPost } from "../localStorage/LocalStorage";
+import { BookPost_Actions } from "../../constant/actionType";
 
 export function setBookPost(data) {
     dispatch.bookPostReducerDispatch({
@@ -35,7 +35,7 @@ export function updateBookPost(data) {
         type: BookPost_Actions.UPDATE_BOOK_POST,
         payload: data,
     });
-    //storeBookPost();
+    storeBookPost();
 }
 export function clearBookPost(data) {
     dispatch.bookPostReducerDispatch({
