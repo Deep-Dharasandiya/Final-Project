@@ -169,7 +169,7 @@ export default function Login(props) {
                             dark={false}
                             isEnable={true}
                         />
-                        <Text style={{ ...CommonStyles.font2Purple, marginTop: 5 * unit }}>version 1.01.01</Text>
+                        <Text style={{ ...CommonStyles.font2Purple, marginTop: 5 * unit }}>version 2.03.08</Text>
                     </View>
                 )
             }
